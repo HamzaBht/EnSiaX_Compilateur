@@ -1,0 +1,65 @@
+//------------------------------------Z:, X:= Q:[  T:]  R:{  P:}
+PROGRAM ->  DECLLIST  
+DECLLIST -> DECL DECLLIST1  
+DECLLIST1 ->    DECL DECLLIST1 | eps   
+DECL -> VARDECL |   FUNCDECL  
+VARDECL ->  TYPE VARDECLLIST ;  
+VARDECLLIST ->  VARVAL VARDECLLIST1  
+VARDECLLIST1 -> , VARVAL VARDECLLIST1 | eps   
+VARVAL ->   VARID VARVALLIST  
+VARVALLIST ->   = SIMPLEEXP | eps   
+VARID ->    id VARIDEXTRA  
+VARIDEXTRA ->   [ numconst ] | eps   
+TYPE -> int |   bool |   char  
+FUNDECL ->  TYPE idfunc (PARAMS) STMT  
+PARAMS ->   PARAMSLIST | eps   
+PARAMSLIST ->   PARAMTYPE PARAMSLIST1  
+PARAMSLIST1 ->  , PARAMTYPE PARAMSLIST1 | eps   
+PARAMTYPE ->    TYPE PARAMID  
+PARAMID ->  id EXTRA  
+EXTRA ->    [ ] | eps   
+STMT -> EXPSTMT |   SCOPESTMT |   CONDSTMT |   ITERSTMT |   RETURNSTMT |   BREAKSTMT |   READSTMT |   WRITESTMT  
+EXPSTMT ->  EXP ; |   ;  
+SCOPESTMT ->    { LOCALDECLS STMTLIST }  
+LOCALDECLS ->   LOCALDECLS1  
+LOCALDECLS1 ->  SCOPEDVARDECL LOCALDECLS1 | eps   // hadi fchkel makayna f ta regle wash terminal ?
+STMTLIST -> STMTLIST1  
+STMTLIST1 ->    STMT STMTLIST1 | eps   
+CONDSTMT -> if FIF  
+FIF ->  SIMPLEEXP FSIMPLEEXP1  
+FSIMPLEEXP1 ->  let STMT |   then STMT else STMT  
+ITERSTMT -> while SIMPLEEXP do STMT |   for id = ITERRANGE do STMT  
+ITERRANGE ->    SIMPLEEXP FSIMPLEEXP  
+FSIMPLEEXP ->   to FTO  
+FTO ->  SIMPLEEXP FSIMPLEEXP1  
+FSIMPLEEXP1 ->   |   by SIMPLEEXP  
+RETURNSTMT ->   return EXPSTMT  
+BREAKSTMT ->    break ;  
+READSTMT -> cin ( LISTID ) ;  
+WRITESTMT ->    cout ( EXP ) ;  
+LISTID ->   id LISTID1  
+LISTID1 ->  , id LISTID1 | eps   
+EXP -> : MUTABLE = EXP |   SIMPLEEXP  
+SIMPLEEXP ->    ANDEXP SIMPLEEXP1  
+SIMPLEEXP1 ->   or ANDEXP SIMPLEEXP1 |  eps 
+ANDEXP ->   NOTEXP ANDEXP1  
+ANDEXP1 ->  and NOTEXP ANDEXP1 |  eps  
+NOTEXP ->   ! NOTEXP |   COMPAREXP  
+COMPAREXP ->    SUMEXP COMPAREXTRA  
+COMPAREXTRA ->  COMPAROP SUMEXP |  eps  
+COMPAROP -> == |   > |   < |   <= |   >= |   !=  
+SUMEXP ->   MULEXP SUMEXP1  
+SUMEXP1 ->  SUMOP MULEXP SUMEXP1 |  eps  
+SUMOP ->    + |   -  
+MULEXP ->   FACTOR MULEXP1  
+MULEXP1 ->  MULOP FACTOR MULEXP1 |  eps  
+MULOP ->    * |   / |   % 
+FACTOR ->   IMMUTABLE |   MUTABLE  
+MUTABLE ->  id MUTABLEEXTRA  
+MUTABLEEXTRA ->  |   [ EXP ]  
+IMMUTABLE ->    ( EXP ) |   CALL |   CONSTANT  
+CALL -> idfunc ( ARGS )  
+ARGS -> ARGLIST |  eps   
+ARGLIST ->  EXP ARGLIST1  
+ARGLIST1 -> , EXP ARGLIST1 |  eps  
+CONSTANT -> numconstant |   charconstant |   stringconstant |   true |   false  
