@@ -4,12 +4,23 @@
 #include <ctype.h>
 #include <stdbool.h>
 #define SIZE 10007
+// typedef enum
+// {
+//     ARRAY,
+//     STRING,
+//     RECORD
+// } np_type;
 typedef enum
 {
-    ARRAY,
+    ERROR,
+    NUM,
+    ID,
+    ID_FUNCTION,
+    SPECIAL,
     STRING,
-    RECORD
-} np_type;
+    CHAR
+
+} enus;
 typedef enum
 {
     // SPECIAL
@@ -61,7 +72,6 @@ typedef enum
     WHILE_TOKEN,       // while
     DO_TOKEN,          // do
     ID_TOKEN,          // id
-
     FIN_TOKEN,
     ERREUR_TOKEN,
     NULL_TOKEN
@@ -108,8 +118,8 @@ typedef enum
     BY_TOKEN_ERREUR,          // by
     RETURN_TOKEN_ERREUR,      // return
     BREAK_TOKEN_ERREUR,       // break
-    CIN_TOKEN_ERREUR,         // cin
-    COUT_TOKEN_ERREUR,        // cout
+    CIN_TOKEN_ERREUR,         // cin (read)
+    COUT_TOKEN_ERREUR,        // cout (write)
     OR_TOKEN_ERREUR,          // or
     AND_TOKEN_ERREUR,         // and
     IF_TOKEN_ERREUR,          // if
@@ -121,15 +131,8 @@ typedef enum
 typedef struct
 {
     Codes_LEX token;
-    char identif[21];
-    char value[21];
-    int ligne;
-    int colonne;
-    int p_type;
-    int np_type;
-    int size;
-    char r_value[100];
-    bool isconst;
+    char identif[31];
+    char value[31];
 } Maptoken;
 
 //--------
@@ -147,23 +150,27 @@ typedef enum
     FICH_VID,
     ID_LONG,
     NUM_LONG,
-} Erreur;
+    MORE_THEN_CHAR
+} Erreurlyx;
 //------
 typedef struct
 {
-    Erreur code_err;
-    char message_erreur[40];
+    Erreurlyx code_err;
+    char message_erreur[50];
+    int ligneErreur;
+    int colonneErreur;
 } Erreurs;
 //-------------------------------------
-Erreurs mes_err[4] = {{CAR_INC, "caractère inconnu"},
+Erreurs mes_err[5] = {{CAR_INC, "caractère inconnu"},
                       {FICH_VID, "fichier vide"},
                       {ID_LONG, "l'identifiant est long"},
-                      {NUM_LONG, "le nombre est grand"}};
+                      {NUM_LONG, "le nombre est grand"},
+                      {MORE_THEN_CHAR, "le type char ne peut avoir plus d'un caractère"}};
 //--------
-int Error_table[(int)1e5];
+Erreurs Error_table[SIZE];
 int curseur = 0;
 //------
-Maptoken specials[17] = {
+Maptoken specials[23] = {
     {CRO_TOKEN, "CRO_TOKEN"},
     {CRF_TOKEN, "CRF_TOKEN"},
     {ACO_TOKEN, "ACO_TOKEN"},
@@ -189,7 +196,7 @@ Maptoken specials[17] = {
     {FIN_TOKEN, "FIN_TOKEN"},
 };
 
-Maptoken key_words[11] = {
+Maptoken key_words[24] = {
     {NUMCONST_TOKEN, "NUMCONST_TOKEN"},
     {CHARCONST_TOKEN, "CHARCONST_TOKEN"},
     {STRINGCONST_TOKEN, "STRINGCONST_TOKEN"},
@@ -217,19 +224,13 @@ Maptoken key_words[11] = {
 };
 
 Maptoken_erreur maperror[35] = {
-    {PROGRAM_TOKEN, "Error: un  'PROGRAM' est manquant "},
-    {CONST_TOKEN, "Error :au niveau de la définition  des constantes "},
-    {VAR_TOKEN, "Error :au niveau de la définition  des variables "},
-    {BEGIN_TOKEN, "Error : un 'BEGIN'est  manquant  "},
-    {END_TOKEN, "Error : un 'END' est  manquant"},
     {IF_TOKEN, "Error : un 'IF'est  manquant"},
     {THEN_TOKEN, "Error : un 'THEN'est  manquant"},
     {WHILE_TOKEN, "Error : un 'WHILE'est  manquant"},
     {DO_TOKEN, "Error : un 'DO'est  manquant"},
-    {READ_TOKEN, "Error : erreur de lecture "},
-    {WRITE_TOKEN, "Error : erreur d'écréture"},
+    {CIN_TOKEN, "Error : erreur de lecture "},
+    {COUT_TOKEN, "Error : erreur d'écréture"},
     {PV_TOKEN, "Error : un ';'est  manquant"},
-    {PT_TOKEN, "Error : un '.'est  manquant"},
     {PLUS_TOKEN, "Error :une opération mathématique ne peut etre efféctuer sans opérateur"},
     {MOINS_TOKEN, "Error :une opération mathématique ne peut etre efféctuer sans opérateur"},
     {MULT_TOKEN, "Error :une opération mathématique ne peut etre efféctuer sans opérateur"},
