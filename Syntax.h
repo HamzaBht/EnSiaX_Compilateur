@@ -1,7 +1,7 @@
 void PROGRAM();
 void DECLLIST();
 void DECLLIST1();
-void DECL(); 
+void DECL();
 void VARDECL();
 void VARDECLLIST();
 void VARDECLLIST1();
@@ -64,7 +64,6 @@ void ARGLIST();
 void ARGLIST1();
 void CONSTANT();
 
-
 bool c = 0;
 struct node *ptr = NULL;
 // int verify_symbol(char identif[21])
@@ -78,28 +77,28 @@ struct node *ptr = NULL;
 // }
 void Symbole_Suiv()
 {
-    if (ptr == NULL)
-        printf("A");
-    else
-        // printf("%s ", Cour_Token.value);
-        ptr = ptr->next;
-    prev_token = Cour_Token;
-    Cour_Token = ptr->info;
+  if (ptr == NULL)
+    printf("A");
+  else
+    // printf("%s ", Cour_Token.value);
+    ptr = ptr->next;
+  prev_token = Cour_Token;
+  Cour_Token = ptr->info;
 }
 
 void Test_Symbole(Codes_LEX token)
 {
 
-    if (Cour_Token.token == token)
-    {
+  if (Cour_Token.token == token)
+  {
 
-        Symbole_Suiv();
-    }
-    else if (c == 0)
-    {
+    Symbole_Suiv();
+  }
+  else if (c == 0)
+  {
 
-        printf("%s\n dans la ligne : %d colonne :%d \n", maperror[token].message_erreur, Cour_Token.ligne, Cour_Token.colonne);
-    }
+    printf("%s\n dans la ligne : %d colonne :%d \n", maperror[token].message_erreur, Cour_Token.ligne, Cour_Token.colonne);
+  }
 }
 
 void PROGRAM()
@@ -109,60 +108,60 @@ void PROGRAM()
 
 void DECLLIST()
 {
-    DECL();
-    DECLLIST1();
+  DECL();
+  DECLLIST1();
 }
 
 void DECLLIST1()
 {
   switch (Cour_Token.token)
   {
-    case INT_TOKEN:
-      DECL();
-      Symbole_Suiv();
-       while(Cour_Token.token == INT_TOKEN || Cour_Token.     token == BOOL_TOKEN || Cour_Token.token ==   CHAR_TOKEN)
-       {
-         DECLLIST1();
-       }
-      break;
-    case BOOL_TOKEN:
-      DECL();
-      Symbole_Suiv();
-       while(Cour_Token.token == INT_TOKEN || Cour_Token.     token == BOOL_TOKEN || Cour_Token.token ==   CHAR_TOKEN)
-       {
-         DECLLIST1();
-       }
-      break;
-    case CHAR_TOKEN:
-      DECL();
-      Symbole_Suiv();
-       while(Cour_Token.token == INT_TOKEN || Cour_Token.     token == BOOL_TOKEN || Cour_Token.token ==   CHAR_TOKEN)
-       {
-         DECLLIST1();
-       }
-      break;  
-    case NULL_TOKEN:
-      break;  
+  case INT_TOKEN:
+    DECL();
+    Symbole_Suiv();
+    while (Cour_Token.token == INT_TOKEN || Cour_Token.token == BOOL_TOKEN || Cour_Token.token == CHAR_TOKEN)
+    {
+      DECLLIST1();
+    }
+    break;
+  case BOOL_TOKEN:
+    DECL();
+    Symbole_Suiv();
+    while (Cour_Token.token == INT_TOKEN || Cour_Token.token == BOOL_TOKEN || Cour_Token.token == CHAR_TOKEN)
+    {
+      DECLLIST1();
+    }
+    break;
+  case CHAR_TOKEN:
+    DECL();
+    Symbole_Suiv();
+    while (Cour_Token.token == INT_TOKEN || Cour_Token.token == BOOL_TOKEN || Cour_Token.token == CHAR_TOKEN)
+    {
+      DECLLIST1();
+    }
+    break;
+  case NULL_TOKEN:
+    break;
   }
 }
 
-void DECL() 
+void DECL()
 {
-    VARDECL();
-    FUNDECL();
+  VARDECL();
+  FUNDECL();
 }
 
 void VARDECL()
 {
-    TYPE();
-    VARDECLLIST();
-    Test_Symbole(PV_TOKEN);
+  TYPE();
+  VARDECLLIST();
+  Test_Symbole(PV_TOKEN);
 }
 
 void VARDECLLIST()
 {
-    VARID();
-    VARVALLIST1();
+  VARID();
+  VARVALLIST1();
 }
 
 void VARDECLLIST1()
@@ -172,78 +171,76 @@ void VARDECLLIST1()
   case VIR_TOKEN:
     VARVAL();
     Symbole_Suiv();
-    while (Cour_Token.token==VIR_TOKEN)
+    while (Cour_Token.token == VIR_TOKEN)
     {
       VARVALLIST1();
     }
     break;
   case NULL_TOKEN:
-    break;  
+    break;
   }
-  
 }
 
 void VARVAL()
 {
-    VARID();
-    VARVALLIST();
+  VARID();
+  VARVALLIST();
 }
 
 void VARVALLIST()
 {
-    switch (Cour_Token.token)
-    {
-        case AFF_TOKEN:
-            SIMPLEEXP();
-            break;
-        case NULL_TOKEN:
-            break;
-    }
+  switch (Cour_Token.token)
+  {
+  case AFF_TOKEN:
+    SIMPLEEXP();
+    break;
+  case NULL_TOKEN:
+    break;
+  }
 }
 
 void VARID()
 {
-    Test_Symbole(ID_TOKEN);
-    VARIDEXTRA();
+  Test_Symbole(ID_TOKEN);
+  VARIDEXTRA();
 }
 
-void VARIDEXTRA ()
+void VARIDEXTRA()
 {
-    switch (Cour_Token.token)
-    {
-    case CRO_TOKEN: //[
-        //Symbole_Suiv();
-        Test_Symbole(NUMCONST_TOKEN);
-        //Symbole_Suiv();
-        Test_Symbole(CRF_TOKEN); //]
-        break;
-    }
-    case NULL_TOKEN:
-        break;
-
+  switch (Cour_Token.token)
+  {
+  case CRO_TOKEN: //[
+    //Symbole_Suiv();
+    Test_Symbole(NUMCONST_TOKEN);
+    //Symbole_Suiv();
+    Test_Symbole(CRF_TOKEN); //]
+    break;
+  }
+case NULL_TOKEN:
+  break;
 }
 
 void TYPE()
 {
-    switch (Cour_Token.token)
-    {
-    case INT_TOKEN:
-        break;
-    case BOOL_TOKEN:
-        break;
-    case CHAR_TOKEN:
-        break;
-    }
-}    
+  switch (Cour_Token.token)
+  {
+  case INT_TOKEN:
+    break;
+  case BOOL_TOKEN:
+    break;
+  case CHAR_TOKEN:
+    break;
+  }
+}
 
 void FUNDECL()
 {
-    TYPE();
-    Test_Symbole(IDFUNC_TOKEN);
-    Test_Symbole(PO_TOKEN); //(
-    PARAMS();  
-    Test_Symbole(PF_TOKEN); //)
-    STMT();                          
+  TYPE();
+  Test_Symbole(IDFUNC_TOKEN);
+  Test_Symbole(PO_TOKEN); //(
+  PARAMS();
+  Test_Symbole(PF_TOKEN); //)
+  STMT();
 }
 
 void PARAMS()
@@ -258,7 +255,7 @@ void PARAMS()
     break;
   case (CHAR_TOKEN):
     PARAMSLIST();
-    break;  
+    break;
   case (NULL_TOKEN):
     break;
   }
@@ -270,7 +267,7 @@ void PARAMSLIST1()
   {
   case VIR_TOKEN:
     PARAMTYPE();
-    while (Cour_Token.token==VIR_TOKEN)
+    while (Cour_Token.token == VIR_TOKEN)
     {
       PARAMSLIST1();
     }
@@ -296,9 +293,9 @@ void EXTRA()
 {
   switch (Cour_Token.token)
   {
-  case CRO_TOKEN: 
+  case CRO_TOKEN:
     //Symbole_Suiv();
-    Test_Symbole(CRF_TOKEN); 
+    Test_Symbole(CRF_TOKEN);
     break;
   case NULL_TOKEN:
     break;
@@ -309,30 +306,30 @@ void STMT()
 {
   switch (Cour_Token.token)
   {
-    case COLON_TOKEN: 
-      EXPSMT();
-      break;
-    case ACO_TOKEN:
-      SCOPESTMT();
-      break;
-    case IF_TOKEN:
-      CONDSTMT();
-      break;
-    case WHILE_TOKEN:
-      ITERSTMT();
-      break;
-    case RETURN_TOKEN:
-      RETURNSTMT();
-      break;      
-    case BREAK_TOKEN:
-      BREAKSTMT();
-      break;
-    case CIN_TOKEN:
-      READSTMT();
-      break;
-    case COUT_TOKEN:
-      READSTMT();
-      break;   
+  case COLON_TOKEN:
+    EXPSMT();
+    break;
+  case ACO_TOKEN:
+    SCOPESTMT();
+    break;
+  case IF_TOKEN:
+    CONDSTMT();
+    break;
+  case WHILE_TOKEN:
+    ITERSTMT();
+    break;
+  case RETURN_TOKEN:
+    RETURNSTMT();
+    break;
+  case BREAK_TOKEN:
+    BREAKSTMT();
+    break;
+  case CIN_TOKEN:
+    READSTMT();
+    break;
+  case COUT_TOKEN:
+    READSTMT();
+    break;
   }
 }
 
@@ -351,27 +348,27 @@ void EXPSTMT()
   case PO_TOKEN:
     ANDEXP();
     SIMPLEEXP1();
-    break;    
+    break;
   case ID_TOKEN:
     ANDEXP();
     SIMPLEEXP1();
-    break;  
+    break;
   case IDFUNC_TOKEN:
     ANDEXP();
     SIMPLEEXP1();
-    break;  
+    break;
   case NUMCONST_TOKEN:
     ANDEXP();
     SIMPLEEXP1();
-    break; 
+    break;
   case CHARCONST_TOKEN:
     ANDEXP();
     SIMPLEEXP1();
-    break; 
+    break;
   case STRINGCONST_TOKEN:
     ANDEXP();
     SIMPLEEXP1();
-    break; 
+    break;
   case TRUE_TOKEN:
     ANDEXP();
     SIMPLEEXP1();
@@ -379,10 +376,10 @@ void EXPSTMT()
   case FALSE_TOKEN:
     ANDEXP();
     SIMPLEEXP1();
-    break;              
+    break;
   case PV_TOKEN:
-    break; 
-    }    
+    break;
+  }
 }
 
 void SCOPESTMT()
@@ -395,9 +392,9 @@ void SCOPESTMT()
 
 void SCOPEDVARDECL()
 {
-    Type();
-    VARDECLLIST();
-    Test_Symbole(PV_TOKEN);
+  Type();
+  VARDECLLIST();
+  Test_Symbole(PV_TOKEN);
 }
 
 void LOCALDECLS()
@@ -407,35 +404,35 @@ void LOCALDECLS()
 
 void LOCALDECLS1()
 {
-    switch (Cour_Token.token)
+  switch (Cour_Token.token)
   {
-    case INT_TOKEN:
-      SCOPEDVARDECL();
-      Symbole_Suiv();
-       while(Cour_Token.token == INT_TOKEN || Cour_Token.     token == BOOL_TOKEN || Cour_Token.token ==   CHAR_TOKEN)
-       {
-         LOCALDECLS1();
-       }
-      break;
-    case BOOL_TOKEN:
-      SCOPEDVARDECL();
-      Symbole_Suiv();
-       while(Cour_Token.token == INT_TOKEN || Cour_Token.     token == BOOL_TOKEN || Cour_Token.token ==   CHAR_TOKEN)
-       {
-         LOCALDECLS1();
-       }
-      break;
-    case CHAR_TOKEN:
-      SCOPEDVARDECL();
-      Symbole_Suiv();
-       while(Cour_Token.token == INT_TOKEN || Cour_Token.     token == BOOL_TOKEN || Cour_Token.token ==   CHAR_TOKEN)
-       {
-         LOCALDECLS1();
-       }
-      break;  
-    case NULL_TOKEN:
-      break;  
+  case INT_TOKEN:
+    SCOPEDVARDECL();
+    Symbole_Suiv();
+    while (Cour_Token.token == INT_TOKEN || Cour_Token.token == BOOL_TOKEN || Cour_Token.token == CHAR_TOKEN)
+    {
+      LOCALDECLS1();
     }
+    break;
+  case BOOL_TOKEN:
+    SCOPEDVARDECL();
+    Symbole_Suiv();
+    while (Cour_Token.token == INT_TOKEN || Cour_Token.token == BOOL_TOKEN || Cour_Token.token == CHAR_TOKEN)
+    {
+      LOCALDECLS1();
+    }
+    break;
+  case CHAR_TOKEN:
+    SCOPEDVARDECL();
+    Symbole_Suiv();
+    while (Cour_Token.token == INT_TOKEN || Cour_Token.token == BOOL_TOKEN || Cour_Token.token == CHAR_TOKEN)
+    {
+      LOCALDECLS1();
+    }
+    break;
+  case NULL_TOKEN:
+    break;
+  }
 }
 
 void STMTLIST()
@@ -449,151 +446,151 @@ void STMTLIST1()
   {
   case PV_TOKEN:
     STMT();
-      Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }    
-    break;  
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
+    break;
   case NOT_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
-    break; 
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
+    break;
   case IF_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
-    break; 
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
+    break;
   case WHILE_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
     break;
   case FOR_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
-    break; 
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
+    break;
   case RETURN_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
     break;
   case BREAK_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
     break;
   case CIN_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
     break;
   case COUT_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
     break;
   case COL_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
-    break;                                       
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
+    break;
   case ACO_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
     break;
   case PO_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
     break;
   case IDFUNC_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
-    break;  
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
+    break;
   case NUMCONST_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
     break;
   case CHARCONST_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
     break;
   case STRINGCONST_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
-    break;  
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
+    break;
   case TRUE_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
     break;
   case FALSE_TOKEN:
     STMT();
-          Symbole_Suiv();
-       while(Cour_Token.token == PV_TOKEN || Cour_Token.     token == NOT_TOKEN || Cour_Token.token ==   IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.     token == FOR_TOKEN || Cour_Token.token ==   RETURN_TOKEN || Cour_Token.token ==   BREAK_TOKEN || Cour_Token.token ==   CIN_TOKEN || Cour_Token.token ==   COUT_TOKEN || Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
-       {
-         STMTLIST1();
-       }  
-    break;  
+    Symbole_Suiv();
+    while (Cour_Token.token == PV_TOKEN || Cour_Token.token == NOT_TOKEN || Cour_Token.token == IF_TOKEN || Cour_Token.token == WHILE_TOKEN || Cour_Token.token == FOR_TOKEN || Cour_Token.token == RETURN_TOKEN || Cour_Token.token == BREAK_TOKEN || Cour_Token.token == CIN_TOKEN || Cour_Token.token == COUT_TOKEN || Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
+    {
+      STMTLIST1();
+    }
+    break;
   case NULL_TOKEN:
     break;
-  }  
+  }
 }
 
 void CONDSTMT()
@@ -605,7 +602,7 @@ void CONDSTMT()
 void FIF()
 {
   SIMPLEEXP();
-  FSIMPLEEXP1(); 
+  FSIMPLEEXP1();
 }
 
 void FSIMPLEEXP1()
@@ -637,7 +634,7 @@ void ITERSTMT()
     Test_Symbole(AFF_TOKEN);
     ITERRANGE();
     Test_Symbole(DO_TOKEN);
-    STMT();  
+    STMT();
     break;
   }
 }
@@ -704,7 +701,6 @@ void LISTID()
 {
   Test_Symbole(ID_TOKEN);
   LISTID1();
-
 }
 
 void LISTID1()
@@ -721,7 +717,6 @@ void LISTID1()
     }
   case NULL_TOKEN:
     break;
-
   }
 }
 
@@ -733,7 +728,7 @@ void EXP()
     MUTABLE();
     Test_Symbole(AFF_TOKEN);
     Symbole_Suiv();
-    while(Cour_Token.token ==   COL_TOKEN || Cour_Token.token ==   ACO_TOKEN || Cour_Token.token ==   PO_TOKEN || Cour_Token.token ==   IDFUNC_TOKEN || Cour_Token.token ==   NUMCONST_TOKEN || Cour_Token.token ==   CHARCONST_TOKEN || Cour_Token.token ==   STRINGCONST_TOKEN || Cour_Token.token ==   TRUE_TOKEN || Cour_Token.token ==   FALSE_TOKEN)
+    while (Cour_Token.token == COL_TOKEN || Cour_Token.token == ACO_TOKEN || Cour_Token.token == PO_TOKEN || Cour_Token.token == IDFUNC_TOKEN || Cour_Token.token == NUMCONST_TOKEN || Cour_Token.token == CHARCONST_TOKEN || Cour_Token.token == STRINGCONST_TOKEN || Cour_Token.token == TRUE_TOKEN || Cour_Token.token == FALSE_TOKEN)
     {
       EXP();
     }
@@ -743,28 +738,28 @@ void EXP()
     break;
   case PO_TOKEN:
     SIMPLEEXP();
-    break;    
+    break;
   case ID_TOKEN:
     SIMPLEEXP();
-    break;  
+    break;
   case IDFUNC_TOKEN:
     SIMPLEEXP();
-    break;  
+    break;
   case NUMCONST_TOKEN:
     SIMPLEEXP();
-    break; 
+    break;
   case CHARCONST_TOKEN:
     SIMPLEEXP();
-    break; 
+    break;
   case STRINGCONST_TOKEN:
     SIMPLEEXP();
-    break; 
+    break;
   case TRUE_TOKEN:
     SIMPLEEXP();
     break;
   case FALSE_TOKEN:
     SIMPLEEXP();
-    break;              
+    break;
   }
 }
 
@@ -776,7 +771,7 @@ void SIMPLEEXP()
 
 void SIMPLEEXP1()
 {
-    switch (Cour_Token.token)
+  switch (Cour_Token.token)
   {
   case OR_TOKEN:
     Symbole_Suiv();
@@ -788,7 +783,6 @@ void SIMPLEEXP1()
     }
   case NULL_TOKEN:
     break;
-
   }
 }
 
@@ -800,7 +794,7 @@ void ANDEXP()
 
 void ANDEXP1()
 {
-    switch (Cour_Token.token)
+  switch (Cour_Token.token)
   {
   case OR_TOKEN:
     Symbole_Suiv();
@@ -812,13 +806,12 @@ void ANDEXP1()
     }
   case NULL_TOKEN:
     break;
-
   }
 }
 
 void NOTEXP()
 {
-      switch (Cour_Token.token)
+  switch (Cour_Token.token)
   {
   case NOT_TOKEN:
     Symbole_Suiv();
@@ -832,7 +825,7 @@ void NOTEXP()
 
   case IDFUNC_TOKEN:
     COMPAREEXP();
-    break;  
+    break;
   case NUMCONST_TOKEN:
     COMPAREEXP();
     break;
@@ -841,13 +834,13 @@ void NOTEXP()
     break;
   case STRINGCONST_TOKEN:
     COMPAREEXP();
-    break;  
+    break;
   case TRUE_TOKEN:
     COMPAREEXP();
     break;
   case FALSE_TOKEN:
     COMPAREEXP();
-    break;  
+    break;
   case ID_TOKEN:
     COMPAREEXP();
     break;
@@ -889,7 +882,7 @@ void COMPAREXTRA()
     SUMEXP();
     break;
   case NULL_TOKEN:
-    break;                      
+    break;
   }
   COMPAROP();
   SUM
@@ -934,7 +927,7 @@ void SUMEXP1()
     }
     break;
   case NULL_TOKEN:
-      break;
+    break;
   }
 }
 
@@ -952,7 +945,7 @@ void MULEXP()
 
 void MULEXP1()
 {
-    switch (Cour_Token.token)
+  switch (Cour_Token.token)
   {
   case MULT_TOKEN:
     MULOP();
@@ -973,7 +966,7 @@ void MULEXP1()
     }
     break;
   case NULL_TOKEN:
-      break;
+    break;
   }
 }
 
@@ -994,7 +987,7 @@ void FACTOR()
 
   case IDFUNC_TOKEN:
     IMMUTABLE();
-    break;  
+    break;
   case NUMCONST_TOKEN:
     IMMUTABLE();
     break;
@@ -1003,13 +996,13 @@ void FACTOR()
     break;
   case STRINGCONST_TOKEN:
     IMMUTABLE();
-    break;  
+    break;
   case TRUE_TOKEN:
     IMMUTABLE();
     break;
   case FALSE_TOKEN:
     IMMUTABLE();
-    break;  
+    break;
   case ID_TOKEN:
     MUTABLE();
     break;
@@ -1040,7 +1033,7 @@ void IMMUTABLE()
 
   case IDFUNC_TOKEN:
     CALL();
-    break;  
+    break;
   case NUMCONST_TOKEN:
     ARGLIST();
     break;
@@ -1049,13 +1042,13 @@ void IMMUTABLE()
     break;
   case STRINGCONST_TOKEN:
     ARGLIST();
-    break;  
+    break;
   case TRUE_TOKEN:
     ARGLIST();
     break;
   case FALSE_TOKEN:
     ARGLIST();
-    break;  
+    break;
   }
 }
 
@@ -1073,17 +1066,17 @@ void ARGS()
   {
   case COLON_TOKEN:
     ARGLIST();
-    break;  
+    break;
   case NOT_TOKEN:
     ARGLIST();
-    break;  
+    break;
   case PO_TOKEN:
     ARGLIST();
     break;
 
   case IDFUNC_TOKEN:
     ARGLIST();
-    break;  
+    break;
   case NUMCONST_TOKEN:
     ARGLIST();
     break;
@@ -1092,13 +1085,13 @@ void ARGS()
     break;
   case STRINGCONST_TOKEN:
     ARGLIST();
-    break;  
+    break;
   case TRUE_TOKEN:
     ARGLIST();
     break;
   case FALSE_TOKEN:
     ARGLIST();
-    break;  
+    break;
   case NULL_TOKEN:
     break;
   }
@@ -1120,10 +1113,10 @@ void ARGLIST1()
     while (Cour_Token.token == VIR_TOKEN)
     {
       ARGLIST1();
-    }   
+    }
     break;
   case NULL_TOKEN:
-    break;  
+    break;
   }
 }
 
@@ -1135,10 +1128,3 @@ void CONSTANT()
   Test_Symbole(TRUE_TOKEN);
   Test_Symbole(FALSE_TOKEN);
 }
-
-
-
-
-
-
-
