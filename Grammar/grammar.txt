@@ -11,7 +11,6 @@ VARVALLIST ->   = SIMPLEEXP | eps
 VARID ->    id VARIDEXTRA  
 VARIDEXTRA ->   [ numconst ] | eps   
 TYPE -> int |   bool |   char  
-FUNDECL ->  TYPE idfunc (PARAMS) STMT  
 PARAMS ->   PARAMSLIST | eps   
 PARAMSLIST ->   PARAMTYPE PARAMSLIST1  
 PARAMSLIST1 ->  , PARAMTYPE PARAMSLIST1 | eps   
