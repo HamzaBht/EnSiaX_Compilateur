@@ -67,27 +67,27 @@ CONSTANT -> numconstant |   charconstant |   stringconstant |   true |   false
 
 
 // grammar to test ll(1) conditions 
-Program →	DeclList .
-DeclList →	Decl DeclList1 .
-DeclList1 →	Decl DeclList1
+Program ->	DeclList .
+DeclList ->	Decl DeclList1 .
+DeclList1 ->	Decl DeclList1
 |	.
-Decl →	Type FType .
-FType →	VarDeclList ;
+Decl ->	Type FType .
+FType ->	VarDeclList ;
 |	idfunc (Params) Stmt .
-VarDeclList →	VarVal VarDeclList1 .
-ScopedVarDecl →	Type VarDeclList ; .
-VarDeclList1 →	z VarVal VarDeclList1
+VarDeclList ->	VarVal VarDeclList1 .
+ScopedVarDecl ->	Type VarDeclList ; .
+VarDeclList1 ->	z VarVal VarDeclList1
 |	.
-VarVal →	VarID VarvalList .
-VarvalList →	x SimpleExp
+VarVal ->	VarID VarvalList .
+VarvalList ->	x SimpleExp
 |	.
-VarID →	id VarIDExtra .
-VarIDExtra →	q numconst t
+VarID ->	id VarIDExtra .
+VarIDExtra ->	q numconst t
 |	.
-Type →	int
+Type ->	int
 |	bool
 |	char .
-Stmt →	ExpStmt
+Stmt ->	ExpStmt
 |	ScopeStmt
 |	CondStmt
 |	IterStmt
@@ -95,79 +95,81 @@ Stmt →	ExpStmt
 |	BreakStmt
 |	ReadStmt
 |	WriteStmt .
-ExpStmt →	Exp ;
+ExpStmt ->	Exp ;
 |	; .
-ScopeStmt →	r LocalDecls StmtList p .
-LocalDecls →	LocalDecls1 .
-LocalDecls1 →	ScopedVarDecl LocalDecls1
+ScopeStmt ->	r LocalDecls StmtList p .
+LocalDecls ->	LocalDecls1 .
+LocalDecls1 ->	ScopedVarDecl LocalDecls1
 |	.
-StmtList →	StmtList1 .
-StmtList1 →	Stmt StmtList1
+StmtList ->	StmtList1 .
+StmtList1 ->	Stmt StmtList1
 |	.
-CondStmt →	if Fif .
-Fif →	SimpleExp FSimpleExp1 .
-FSimpleExp1 →	let Stmt
+CondStmt ->	if Fif .
+Fif ->	SimpleExp FSimpleExp1 .
+FSimpleExp1 ->	let Stmt
 |	then Stmt else Stmt
 |	
 |	by SimpleExp .
-IterStmt →	while SimpleExp do Stmt
+IterStmt ->	while SimpleExp do Stmt
 |	for id x IterRange do Stmt .
-IterRange →	SimpleExp FSimpleExp .
-FSimpleExp →	to Fto .
-Fto →	SimpleExp FSimpleExp1 .
-ReturnStmt →	return ExpStmt .
-BreakStmt →	break ; .
-ReadStmt →	cin ( ListID ) ; .
-WriteStmt →	cout ( Exp ) ; .
-ListID →	id ListID1 .
-ListID1 →	z id ListID1
+IterRange ->	SimpleExp FSimpleExp .
+FSimpleExp ->	to Fto .
+Fto ->	SimpleExp FSimpleExp1 .
+ReturnStmt ->	return ExpStmt .
+BreakStmt ->	break ; .
+ReadStmt ->	cin ( ListID ) ; .
+WriteStmt ->	cout ( Exp ) ; .
+ListID ->	id ListID1 .
+ListID1 ->	z id ListID1
 |	.
-Exp →	: Mutable x Exp
+Exp ->	: Mutable x Exp
 |	SimpleExp .
-SimpleExp →	AndExp SimpleExp1 .
-SimpleExp1 →	or AndExp SimpleExp1
+SimpleExp ->	AndExp SimpleExp1 .
+SimpleExp1 ->	or AndExp SimpleExp1
 |	.
-AndExp →	NotExp AndExp1 .
-AndExp1 →	and NotExp AndExp1
+AndExp ->	NotExp AndExp1 .
+AndExp1 ->	and NotExp AndExp1
 |	.
-NotExp →	! NotExp
+NotExp ->	! NotExp
 |	ComparExp .
-ComparExp →	SumExp ComparExtra .
-ComparExtra →	ComparOp SumExp
+ComparExp ->	SumExp ComparExtra .
+ComparExtra ->	ComparOp SumExp
 |	.
-ComparOp →	ff
+ComparOp ->	ff
 |	rr
 |	tt
 |	dd
 |	xx
 |	ee .
-SumExp →	MulExp SumExp1 .
-SumExp1 →	SumOp MulExp SumExp1
+SumExp ->	MulExp SumExp1 .
+SumExp1 ->	SumOp MulExp SumExp1
 |	.
-SumOp →	+
+SumOp ->	+
 |	uuu .
-MulExp →	Factor MulExp1 .
-MulExp1 →	MulOp Factor MulExp1
+MulExp ->	Factor MulExp1 .
+MulExp1 ->	MulOp Factor MulExp1
 |	.
-MulOp →	*
+MulOp ->	*
 |	/
 |	oo .
-Factor →	Immutable
+Factor ->	Immutable
 |	Mutable .
-Mutable →	id MutableExtra .
-MutableExtra →	
+Mutable ->	id MutableExtra .
+MutableExtra ->	
 |	q Exp t .
-Immutable →	( Exp )
+Immutable ->	( Exp )
 |	Call
 |	Constant .
-Call →	idfunc ( Args ) .
-Args →	ArgList
+Call ->	idfunc ( Args ) .
+Args ->	ArgList
 |	.
-ArgList →	Exp ArgList1 .
-ArgList1 →	z Exp ArgList1
+ArgList ->	Exp ArgList1 .
+ArgList1 ->	z Exp ArgList1
 |	.
-Constant →	numconstant
+Constant ->	numconstant
 |	charconstant
 |	stringconstant
 |	true
 |	false . 
+
+
