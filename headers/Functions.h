@@ -293,7 +293,7 @@ void read_symbole()
         else
         {
             Cour_Token.token = FIN_TOKEN;
-            strcpy(Cour_Token.identif, "EOF_TOKEN");
+            strcpy(Cour_Token.identif, "FIN_TOKEN");
         }
     }
     if (Cour_Token.token != NULL_TOKEN)
@@ -338,11 +338,14 @@ void tokenmap(int type)
         // printf("%s ", Cour_Token.value);
         for (int i = 0; i < 24; i++)
         {
+            // printf("%s ", key_words[i].identif);
             if (strcmp(Cour_Token.value, key_words[i].identif) == 0)
             {
                 strcpy(Cour_Token.identif, key_words[i].identif);
+                strcat(Cour_Token.identif, "_TOKEN");
                 Cour_Token.token = key_words[i].token;
                 check = 1;
+                // printf("%s ", Cour_Token.identif);
                 break;
             }
         }
@@ -380,6 +383,8 @@ void tokenmap(int type)
         strcpy(Cour_Token.identif, "STRINGCONST_TOKEN");
         Cour_Token.token = STRINGCONST_TOKEN;
     }
+    Cour_Token.ligne = ligne;
+    Cour_Token.colonne = colonne;
 }
 //-------------------------
 //----------------------------
@@ -401,6 +406,9 @@ void Analex(const char *filename)
         printf("Erreur :%s", mes_err[1].message_erreur);
         return;
     }
+    Cour_Token.token = FIN_TOKEN;
+    strcpy(Cour_Token.identif, "FIN_TOKEN");
+    push(Cour_Token);
     display();
 
     fclose(file);
@@ -441,7 +449,7 @@ void display()
         while (ptr != NULL)
         {
             if (ptr->info.identif[0] != '\n')
-                printf("%s ", ptr->info.value);
+                printf("%s %d %d ", ptr->info.identif, ptr->info.ligne, ptr->info.colonne);
             ptr = ptr->next;
         }
     }

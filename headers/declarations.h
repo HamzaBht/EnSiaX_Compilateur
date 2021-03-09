@@ -133,6 +133,8 @@ typedef struct
     Codes_LEX token;
     char identif[31];
     char value[31];
+    int ligne;
+    int colonne;
 } Maptoken;
 
 //--------
@@ -197,56 +199,82 @@ Maptoken specials[23] = {
 };
 
 Maptoken key_words[24] = {
-    {NUMCONST_TOKEN, "NUMCONST_TOKEN"},
-    {CHARCONST_TOKEN, "CHARCONST_TOKEN"},
-    {STRINGCONST_TOKEN, "STRINGCONST_TOKEN"},
-    {TRUE_TOKEN, "TRUE_TOKEN"},
-    {FALSE_TOKEN, "FALSE_TOKEN"},
-    {IDFCT_TOKEN, "IDFCT_TOKEN"},
-    {INT_TOKEN, "INT_TOKEN"},
-    {BOOL_TOKEN, "BOOL_TOKEN"},
-    {CHAR_TOKEN, "CHAR_TOKEN"},
-    {LET_TOKEN, "LET_TOKEN"},
-    {ELSE_TOKEN, "ELSE_TOKEN"},
-    {FOR_TOKEN, "FOR_TOKEN"},
-    {TO_TOKEN, "TO_TOKEN"},
-    {BY_TOKEN, "BY_TOKEN"},
-    {RETURN_TOKEN, "RETURN_TOKEN"},
-    {BREAK_TOKEN, "BREAK_TOKEN"},
-    {CIN_TOKEN, "CIN_TOKEN"},
-    {COUT_TOKEN, "COUT_TOKEN"},
-    {OR_TOKEN, "OR_TOKEN"},
-    {AND_TOKEN, "AND_TOKEN"},
-    {IF_TOKEN, "IF_TOKEN"},
-    {THEN_TOKEN, "THEN_TOKEN"},
-    {WHILE_TOKEN, "WHILE_TOKEN"},
-    {DO_TOKEN, "DO_TOKEN"},
+    {NUMCONST_TOKEN, "NUMCONST", ""},
+    {CHARCONST_TOKEN, "CHARCONST", ""},
+    {STRINGCONST_TOKEN, "STRINGCONST", ""},
+    {TRUE_TOKEN, "TRUE", ""},
+    {FALSE_TOKEN, "FALSE", ""},
+    {IDFCT_TOKEN, "IDFCT", ""},
+    {INT_TOKEN, "INT", ""},
+    {BOOL_TOKEN, "BOOL", ""},
+    {CHAR_TOKEN, "CHAR", ""},
+    {LET_TOKEN, "LET", ""},
+    {ELSE_TOKEN, "ELSE", ""},
+    {FOR_TOKEN, "FOR", ""},
+    {TO_TOKEN, "TO", ""},
+    {BY_TOKEN, "BY", ""},
+    {RETURN_TOKEN, "RETURN", ""},
+    {BREAK_TOKEN, "BREAK", ""},
+    {CIN_TOKEN, "CIN", ""},
+    {COUT_TOKEN, "COUT", ""},
+    {OR_TOKEN, "OR", ""},
+    {AND_TOKEN, "AND", ""},
+    {IF_TOKEN, "IF", ""},
+    {THEN_TOKEN, "THEN", ""},
+    {WHILE_TOKEN, "WHILE", ""},
+    {DO_TOKEN, "DO", ""},
 };
 
-Maptoken_erreur maperror[35] = {
-    {IF_TOKEN, "Error : un 'IF'est  manquant"},
-    {THEN_TOKEN, "Error : un 'THEN'est  manquant"},
-    {WHILE_TOKEN, "Error : un 'WHILE'est  manquant"},
-    {DO_TOKEN, "Error : un 'DO'est  manquant"},
-    {CIN_TOKEN, "Error : erreur de lecture "},
-    {COUT_TOKEN, "Error : erreur d'écréture"},
-    {PV_TOKEN, "Error : un ';'est  manquant"},
-    {PLUS_TOKEN, "Error :une opération mathématique ne peut etre efféctuer sans opérateur"},
-    {MOINS_TOKEN, "Error :une opération mathématique ne peut etre efféctuer sans opérateur"},
-    {MULT_TOKEN, "Error :une opération mathématique ne peut etre efféctuer sans opérateur"},
-    {DIV_TOKEN, "Error :une opération mathématique ne peut etre efféctuer sans opérateur"},
-    {VIR_TOKEN, "Error : un ','est  manquant"},
-    {AFF_TOKEN, "Error : un ':='est  manquant"},
-    {EG_TOKEN, "Error : un '='est  manquant"},
-    {INF_TOKEN, "Error :une opération  booléenne ne peut etre efféctuer sans opérateur"},
-    {INFEG_TOKEN, "Error :une opération  booléenne ne peut etre efféctuer sans opérateur"},
-    {SUP_TOKEN, "Error :une opération  booléenne ne peut etre efféctuer sans opérateur"},
-    {SUPEG_TOKEN, "Error :une opération  booléenne ne peut etre efféctuer sans opérateur"},
-    {DIFF_TOKEN, "Error :une opération  booléenne ne peut etre efféctuer sans opérateur"},
-    {PO_TOKEN, "Error : un '('est  manquant"},
-    {PF_TOKEN, "Error : un ')'est  manquant"},
-    {FIN_TOKEN, "Error :erreur"},
-    {ERREUR_TOKEN, "Error : erreur de syntaxe"}};
+Maptoken_erreur maperror[50] = {
+    {CRO_TOKEN_ERREUR, " un '['est  manquant"},   // [
+    {CRF_TOKEN_ERREUR, " un ']'est  manquant"},   // ]
+    {ACO_TOKEN_ERREUR, " un '{'est  manquant"},   // {
+    {ACF_TOKEN_ERREUR, " un '}'est  manquant"},   // },
+    {COLON_TOKEN_ERREUR, " un ':'est  manquant"}, // :
+    {NOT_TOKEN_ERREUR, " un '!'est  manquant"},   // !
+    {AFF_TOKEN_ERREUR, " un '='est  manquant"},   // =
+    {MOD_TOKEN_ERREUR, " un '%'est  manquant"},   // %
+    {PV_TOKEN_ERREUR, " un ';'est  manquant"},
+    {PLUS_TOKEN_ERREUR, "une operation mathematique ne peut etre effectuer sans operateur"},
+    {MOINS_TOKEN_ERREUR, "une operation mathematique ne peut etre effectuer sans operateur"},
+    {MULT_TOKEN_ERREUR, "une operation mathematique ne peut etre effectuer sans operateur"},
+    {DIV_TOKEN_ERREUR, "une operation mathematique ne peut etre effectuer sans operateur"},
+    {VIR_TOKEN_ERREUR, " un ','est  manquant"}, // ,""},
+    {EG_TOKEN_ERREUR, " un '='est  manquant"},
+    {INF_TOKEN_ERREUR, "une operation  booleenne ne peut etre effectuer sans operateur"},
+    {INFEG_TOKEN_ERREUR, "une operation  booleenne ne peut etre effectuer sans operateur"},
+    {SUP_TOKEN_ERREUR, "une operation  booleenne ne peut etre effectuer sans operateur"},
+    {SUPEG_TOKEN_ERREUR, "une operation  booleenne ne peut etre effectuer sans operateur"},
+    {DIFF_TOKEN_ERREUR, "une operation  booleenne ne peut etre effectuer sans operateur"},
+    {PO_TOKEN_ERREUR, " un '('est  manquant"},
+    {PF_TOKEN_ERREUR, " un ')'est  manquant"},
+    {NUMCONST_TOKEN_ERREUR, " un entier est manquant"},                      // numconst
+    {CHARCONST_TOKEN_ERREUR, "un caractere est manquant"},                   // charconstant
+    {STRINGCONST_TOKEN_ERREUR, "une chaine de caractere est manquante"},     // stringconstant
+    {TRUE_TOKEN_ERREUR, "un true or false est manquant"},                    // true
+    {FALSE_TOKEN_ERREUR, "un true or false est manquant"},                   // false
+    {IDFCT_TOKEN_ERREUR, " un identifiant est manquant"},                    // idfunc
+    {INT_TOKEN_ERREUR, "le type (int |bool | char ...) n'est pas precise"},  // int
+    {BOOL_TOKEN_ERREUR, "le type (int |bool | char ...) n'est pas precise"}, // bool
+    {CHAR_TOKEN_ERREUR, "le type (int |bool | char ...) n'est pas precise"}, // char
+    {LET_TOKEN_ERREUR, "un 'let ' est manquant "},                           // let
+    {ELSE_TOKEN_ERREUR, " un 'else ' est manquant"},                         // else
+    {FOR_TOKEN_ERREUR, " un 'for' est manquant"},                            // for
+    {TO_TOKEN_ERREUR, "un 'to' est manquant "},                              // to
+    {BY_TOKEN_ERREUR, "un 'by' est manquant"},                               // by
+    {RETURN_TOKEN_ERREUR, " un return est manquant"},                        // return
+    {BREAK_TOKEN_ERREUR, "un break est manquant"},                           // break
+    {CIN_TOKEN_ERREUR, " erreur de lecture "},
+    {COUT_TOKEN_ERREUR, " erreur d'ecreture"},                                             // cout (write)
+    {OR_TOKEN_ERREUR, "une operation  booleenne ne peut etre effectuer sans operateur  "}, // or
+    {AND_TOKEN_ERREUR, "une operation  booleenne ne peut etre effectuer sans operateur"},  // and
+    {IF_TOKEN_ERREUR, " un 'IF'est  manquant"},                                            // if
+    {THEN_TOKEN_ERREUR, " un 'THEN'est  manquant"},                                        // then
+    {WHILE_TOKEN_ERREUR, " un 'WHILE'est  manquant"},                                      // while
+    {DO_TOKEN_ERREUR, " un 'DO'est  manquant"},
+    {ID_TOKEN_ERREUR, " un identifiant est manquant"}, // do
+    {FIN_TOKEN, "erreur"},
+    {ERREUR_TOKEN, " erreur de syntaxe "}};
 
 //nombre total des token
 int nbTokens = 0, ligne = 1, colonne = 1, indx;
@@ -288,3 +316,70 @@ void display();
 //____________
 //partie syntaxique
 //---------------------
+
+void PROGRAM();
+void DECLLIST();
+void DECLLIST1();
+void DECL();
+void FTYPE();
+//void VARDECL();
+void VARDECLLIST();
+void VARDECLLIST1();
+void VARVAL();
+void VARVALLIST();
+void VARID();
+void VARIDEXTRA();
+void TYPE();
+//void FUNDECL();
+void PARAMS();
+void PARAMSLIST();
+void PARAMSLIST1();
+void PARAMTYPE();
+void PARAMID();
+void EXTRA();
+void STMT();
+void EXPSTMT();
+void SCOPESTMT();
+void SCOPEDVARDECL();
+void LOCALDECLS();
+void LOCALDECLS1();
+void STMTLIST();
+void STMTLIST1();
+void CONDSTMT();
+void FIF();
+void FSIMPLEEXP1();
+void ITERSTMT();
+void ITERRANGE();
+void FSIMPLEEXP();
+void FTO();
+void FSIMPLEEXP1();
+void RETURNSTMT();
+void BREAKSTMT();
+void READSTMT();
+void WRITESTMT();
+void LISTID();
+void LISTID1();
+void EXP();
+void SIMPLEEXP();
+void SIMPLEEXP1();
+void ANDEXP();
+void ANDEXP1();
+void NOTEXP();
+void COMPAREXP();
+void COMPAREXTRA();
+void COMPAROP();
+void SUMEXP();
+void SUMEXP1();
+void SUMOP();
+void MULEXP();
+void MULEXP1();
+void MULOP();
+void FACTOR();
+void MUTABLE();
+void MUTABLEEXTRA();
+void IMMUTABLE();
+void CALL();
+void ARGS();
+void ARGLIST();
+void ARGLIST1();
+void CONSTANT();

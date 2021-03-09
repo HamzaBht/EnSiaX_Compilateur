@@ -1,36 +1,41 @@
 #include "Functions.h"
 
-bool c = 0;
+bool a = 0;
 struct node *ptr = NULL;
+
+void printErreur(Codes_LEX token)
+{
+    if (token != ERREUR_TOKEN)
+        printf("\n Erreur avant (Ligne : %d  Colonne : %d) :  %s \n", Cour_Token.ligne, Cour_Token.colonne, maperror[token].message_erreur);
+    printf("%d ", maperror[token].token);
+}
 
 void Symbole_Suiv()
 {
     if (ptr == NULL)
-        printf("A");
-    else
-        // printf("%s ", Cour_Token.value);
-        ptr = ptr->next;
+        printf("Fichier VIDE ");
+    printf("%s ", Cour_Token.value);
+    ptr = ptr->next;
     prev_token = Cour_Token;
     Cour_Token = ptr->info;
 }
 
 void Test_Symbole(Codes_LEX token)
 {
-
     if (Cour_Token.token == token)
     {
-
         Symbole_Suiv();
+        return;
     }
-    else if (c == 0)
-    {
-
-        // printf("%s\n dans la ligne : %d colonne :%d \n", maperror[token].message_erreur, Cour_Token.ligne, Cour_Token.colonne);
-    }
+    printErreur(token);
+    // Symbole_Suiv();
 }
 
 void PROGRAM()
 {
+    printf("Begin\n");
+    ptr = head;
+    Cour_Token = ptr->info;
     DECLLIST();
 }
 
@@ -41,6 +46,8 @@ void DECLLIST()
 }
 void DECLLIST1()
 {
+    if (Cour_Token.token == FIN_TOKEN || a == 1)
+        return;
     DECL();
     DECLLIST1();
 }
@@ -62,40 +69,49 @@ void FTYPE()
         Test_Symbole(PO_TOKEN);
         PARAMS();
         Test_Symbole(PF_TOKEN);
-        STMT();
+        SCOPESTMT();
+        break;
+    default:
+        printErreur(ID_TOKEN);
         break;
     }
 }
 void VARDECLLIST()
 {
+    // printf("VARDECLLIST ");
     VARVAL();
     VARDECLLIST1();
 }
 
 void VARDECLLIST1()
 {
+    // printf("VARDECLLIST1 ");
     switch (Cour_Token.token)
     {
     case VIR_TOKEN:
-        VARVAL();
         Symbole_Suiv();
+        VARVAL();
+        // Symbole_Suiv();
         VARDECLLIST1();
         break;
     case PV_TOKEN:
         break;
     default:
-        //erreur
+        printErreur(VIR_TOKEN);
+        break;
     }
 }
 
 void VARVAL()
 {
+    // printf("VARVAL ");
     VARID();
     VARVALLIST();
 }
 
 void VARVALLIST()
 {
+    // printf("VARVALLIST ");
     switch (Cour_Token.token)
     {
     case AFF_TOKEN:
@@ -110,17 +126,21 @@ void VARVALLIST()
     case PV_TOKEN:
         break;
     default:
-        //erreur
+        printErreur(AFF_TOKEN);
+        break;
+        //     //erreur
     }
 }
 void VARID()
 {
+    // printf("VARID ");
     Test_Symbole(ID_TOKEN);
     VARIDEXTRA();
 }
 
 void VARIDEXTRA()
 {
+    // printf("VARIDEXTRA ");
     switch (Cour_Token.token)
     {
     case CRO_TOKEN: //[
@@ -134,25 +154,25 @@ void VARIDEXTRA()
     case VIR_TOKEN:
         break;
     default:
-        //erreur
+        printErreur(CRO_TOKEN);
+        break;
+        //     //erreur
     }
 }
 
 void TYPE()
 {
+    // printf("TYPE %s ", Cour_Token.value);
     switch (Cour_Token.token)
     {
     case INT_TOKEN:
-        Symbole_Suiv();
-        break;
     case BOOL_TOKEN:
-        Symbole_Suiv();
-        break;
     case CHAR_TOKEN:
         Symbole_Suiv();
         break;
     default:
-        //erreur
+        printErreur(INT_TOKEN);
+        //     //erreur
     }
 }
 
@@ -166,11 +186,13 @@ void PARAMS()
         PARAMSLIST();
         break;
     case (PF_TOKEN):
-        Symbole_Suiv();
-        STMT();
+        // Symbole_Suiv();
+        // STMT();
         break;
     default:
-        //erreur
+        printErreur(INT_TOKEN);
+        break;
+        //     //erreur
     }
 }
 
@@ -189,12 +211,13 @@ void PARAMSLIST1()
         PARAMTYPE();
         PARAMSLIST1();
         break;
-    case (PO_TOKEN):
-        Symbole_Suiv();
-        STMT();
+    case (PF_TOKEN):
+        // Symbole_Suiv();
+        // STMT();
         break;
     default:
-        //erreur
+        printErreur(VIR_TOKEN);
+        //     //erreur
     }
 }
 
@@ -217,11 +240,14 @@ void EXTRA()
         Test_Symbole(CRF_TOKEN);
         break;
     case VIR_TOKEN:
-        Symbole_Suiv();
-        PARAMTYPE();
-        PARAMSLIST1();
+    case PF_TOKEN:
+        // Symbole_Suiv();
+        // PARAMTYPE();
+        // PARAMSLIST1();
         break;
     default:
+        printErreur(CRO_TOKEN);
+        break;
         // erreur
     }
 }
@@ -257,8 +283,29 @@ void STMT()
     case COUT_TOKEN:
         READSTMT();
         break;
+    case NUMCONST_TOKEN:
+    case CHARCONST_TOKEN:
+    case STRINGCONST_TOKEN:
+    case TRUE_TOKEN:
+    case FALSE_TOKEN:
+        CONSTANT();
+        break;
+    case PV_TOKEN:
+        EXPSTMT();
+        break;
+    case NOT_TOKEN:
+        NOTEXP();
+        break;
+    case ID_TOKEN:
+        MUTABLE();
+        break;
+    case IDFCT_TOKEN:
+        CALL();
+        break;
+
     default:
-        //erreur
+        printErreur(ERREUR_TOKEN);
+        //     //erreur
     }
 }
 
@@ -267,8 +314,19 @@ void EXPSTMT()
     switch (Cour_Token.token)
     {
     case COLON_TOKEN:
+    case ID_TOKEN:
+    case IDFCT_TOKEN:
+    case NOT_TOKEN:
+    case PO_TOKEN:
+    case NUMCONST_TOKEN:
+    case CHARCONST_TOKEN:
+    case STRINGCONST_TOKEN:
+    case TRUE_TOKEN:
+    case FALSE_TOKEN:
         EXP();
+        // printf("im here ");
         Test_Symbole(PV_TOKEN);
+        // printf("im here ");
         break;
     case PV_TOKEN:
         Symbole_Suiv();
@@ -294,71 +352,66 @@ void LOCALDECLS1()
     switch (Cour_Token.token)
     {
     case INT_TOKEN:
-        SCOPEDVARDECL();
-        LOCALDECLS1();
-        break;
     case BOOL_TOKEN:
-        SCOPEDVARDECL();
-        LOCALDECLS1();
-        break;
     case CHAR_TOKEN:
         SCOPEDVARDECL();
         LOCALDECLS1();
         break;
     case PV_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case IF_TOKEN:
-        CONDSTMT();
-        break;
+        // CONDSTMT();
+        // break;
     case WHILE_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case FOR_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case RETURN_TOKEN:
-        RETURNSTMT();
-        break;
+        // RETURNSTMT();
+        // break;
     case BREAK_TOKEN:
-        BREAKSTMT();
-        break;
+        // BREAKSTMT();
+        // break;
     case CIN_TOKEN:
-        READSTMT();
-        break;
+        // READSTMT();
+        // break;
     case COUT_TOKEN:
-        WRITESTMT();
-        break;
+        // WRITESTMT();
+        // break;
     case COLON_TOKEN:
-        EXP();
-        break;
+        // EXP();
+        // break;
     case NOT_TOKEN:
-        NOTEXP();
-        break;
+        // NOTEXP();
+        // break;
     case PO_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case ACO_TOKEN:
-        SCOPESTMT();
-        break;
+        // SCOPESTMT();
+        // break;
     case ACF_TOKEN:
-        Symbole_Suiv(); //
-        break;
+        // Symbole_Suiv(); //
+        // break;
     case ID_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case IDFCT_TOKEN:
-        CALL();
-        break;
+        // CALL();
+        // break;
     case NUMCONST_TOKEN:
     case CHARCONST_TOKEN:
     case STRINGCONST_TOKEN:
     case TRUE_TOKEN:
     case FALSE_TOKEN:
-        CONSTANT();
+        // CONSTANT();
         break;
     default:
-        //erreur
+        printErreur(ERREUR_TOKEN);
+        //     //erreur
     }
 }
 
@@ -375,6 +428,7 @@ void STMTLIST()
 
 void STMTLIST1()
 {
+    // printf("mamamam ");
     switch (Cour_Token.token)
     {
     case PV_TOKEN:
@@ -400,10 +454,11 @@ void STMTLIST1()
         STMTLIST1();
         break;
     case ACF_TOKEN:
-        Symbole_Suiv(); //}
+        // Symbole_Suiv(); //}
         break;
     default:
-        //erreur
+        printErreur(ERREUR_TOKEN);
+        //     //erreur
     }
 }
 
@@ -415,6 +470,7 @@ void CONDSTMT()
 void FIF()
 {
     SIMPLEEXP();
+    // printf("fin");
     FSIMPLEEXP1();
 }
 void ITERSTMT()
@@ -475,65 +531,65 @@ void FSIMPLEEXP1()
         STMT();
         break;
     case DO_TOKEN:
-        Symbole_Suiv();
-        STMT();
+        // Symbole_Suiv();
+        // STMT();
     case PV_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case IF_TOKEN:
-        CONDSTMT();
-        break;
+        // CONDSTMT();
+        // break;
     case WHILE_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case FOR_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case RETURN_TOKEN:
-        RETURNSTMT();
-        break;
+        // RETURNSTMT();
+        // break;
     case BREAK_TOKEN:
-        BREAKSTMT();
-        break;
+        // BREAKSTMT();
+        // break;
     case CIN_TOKEN:
-        READSTMT();
-        break;
+        // READSTMT();
+        // break;
     case COUT_TOKEN:
-        WRITESTMT();
-        break;
+        // WRITESTMT();
+        // break;
     case COLON_TOKEN:
-        EXP();
+        // printf("AAAAA");
         break;
+        // EXP();
+        // break;
     case NOT_TOKEN:
-        NOTEXP();
-        break;
+        // NOTEXP();
+        // break;
     case PO_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case ACO_TOKEN:
-        SCOPESTMT();
-        break;
+        // SCOPESTMT();
+        // break;
     case ACF_TOKEN:
-        Symbole_Suiv(); //
-        break;
+        // Symbole_Suiv(); //
+        // break;
     case ID_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case IDFCT_TOKEN:
-        CALL();
-        break;
+        // CALL();
+        // break;
     case NUMCONST_TOKEN:
     case CHARCONST_TOKEN:
     case STRINGCONST_TOKEN:
     case TRUE_TOKEN:
     case FALSE_TOKEN:
-        CONSTANT();
+        // CONSTANT();
         break;
     default:
-        //erreur
-
-    case NULL_TOKEN:
-        break;
+        printErreur(ERREUR_TOKEN);
+        //     //erreur
     }
 }
 
@@ -583,10 +639,12 @@ void LISTID1()
         Symbole_Suiv();
         LISTID1();
     case PF_TOKEN:
-        Symbole_Suiv();
-        Test_Symbole(PV_TOKEN);
+        // Symbole_Suiv();
+        // Test_Symbole(PV_TOKEN);
+        break;
     default:
-        //erreur
+        printErreur(VIR_TOKEN);
+        //     //erreur
     }
 }
 
@@ -595,9 +653,9 @@ void EXP()
     switch (Cour_Token.token)
     {
     case COLON_TOKEN:
+        Symbole_Suiv();
         MUTABLE();
         Test_Symbole(AFF_TOKEN);
-        Symbole_Suiv();
         EXP();
         break;
     case NOT_TOKEN:
@@ -612,6 +670,7 @@ void EXP()
         SIMPLEEXP();
         break;
     default:
+        printErreur(COLON_TOKEN);
         // erreur
     }
 }
@@ -629,94 +688,96 @@ void SIMPLEEXP1()
     case OR_TOKEN:
         Symbole_Suiv();
         ANDEXP();
-        Symbole_Suiv();
+        // Symbole_Suiv();
         SIMPLEEXP1();
     case BY_TOKEN:
-        Symbole_Suiv();
-        SIMPLEEXP();
+        // Symbole_Suiv();
+        // SIMPLEEXP();
         break;
     case LET_TOKEN:
-        Symbole_Suiv();
-        STMT();
+        // Symbole_Suiv();
+        // STMT();
         break;
     case THEN_TOKEN:
-        Symbole_Suiv();
-        STMT();
-        Test_Symbole(ELSE_TOKEN);
-        STMT();
+        // Symbole_Suiv();
+        // STMT();
+        // Test_Symbole(ELSE_TOKEN);
+        // STMT();
         break;
     case DO_TOKEN:
-        Symbole_Suiv();
-        STMT();
+        // Symbole_Suiv();
+        // STMT();
     case PV_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case IF_TOKEN:
-        CONDSTMT();
-        break;
+        // CONDSTMT();
+        // break;
     case WHILE_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case FOR_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case RETURN_TOKEN:
-        RETURNSTMT();
-        break;
+        // RETURNSTMT();
+        // break;
     case BREAK_TOKEN:
-        BREAKSTMT();
-        break;
+        // BREAKSTMT();
+        // break;
     case CIN_TOKEN:
-        READSTMT();
-        break;
+        // READSTMT();
+        // break;
     case COUT_TOKEN:
-        WRITESTMT();
-        break;
+        // WRITESTMT();
+        // break;
     case COLON_TOKEN:
-        EXP();
-        break;
+        // EXP();
+        // break;
     case NOT_TOKEN:
-        NOTEXP();
-        break;
+        // NOTEXP();
+        // break;
     case PO_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case ACO_TOKEN:
-        SCOPESTMT();
-        break;
+        // SCOPESTMT();
+        // break;
     case ACF_TOKEN:
-        Symbole_Suiv(); //
-        break;
+        // Symbole_Suiv(); //
+        // break;
     case ID_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case IDFCT_TOKEN:
-        CALL();
-        break;
+        // CALL();
+        // break;
     case NUMCONST_TOKEN:
     case CHARCONST_TOKEN:
     case STRINGCONST_TOKEN:
     case TRUE_TOKEN:
     case FALSE_TOKEN:
-        CONSTANT();
-        break;
+        // CONSTANT();
+        // break;
     case TO_TOKEN:
-        Symbole_Suiv();
-        FTO();
+        // Symbole_Suiv();
+        // FTO();
         break;
     case PF_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case CRF_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case VIR_TOKEN:
-        Symbole_Suiv();
-        EXP();
-        ARGLIST1();
+        // Symbole_Suiv();
+        // EXP();
+        // ARGLIST1();
         break;
     default:
-        //erreur
+        printErreur(OR_TOKEN);
+
+        //     //erreur
     }
 }
 
@@ -736,96 +797,97 @@ void ANDEXP1()
         ANDEXP1();
         break;
     case OR_TOKEN:
-        Symbole_Suiv();
-        ANDEXP();
-        Symbole_Suiv();
-        SIMPLEEXP1();
+        // Symbole_Suiv();
+        // ANDEXP();
+        // Symbole_Suiv();
+        // SIMPLEEXP1();
     case BY_TOKEN:
-        Symbole_Suiv();
-        SIMPLEEXP();
-        break;
+        // Symbole_Suiv();
+        // SIMPLEEXP();
+        // break;
     case LET_TOKEN:
-        Symbole_Suiv();
-        STMT();
-        break;
+        // Symbole_Suiv();
+        // STMT();
+        // break;
     case THEN_TOKEN:
-        Symbole_Suiv();
-        STMT();
-        Test_Symbole(ELSE_TOKEN);
-        STMT();
-        break;
+        // Symbole_Suiv();
+        // STMT();
+        // Test_Symbole(ELSE_TOKEN);
+        // STMT();
+        // break;
     case DO_TOKEN:
-        Symbole_Suiv();
-        STMT();
+        // Symbole_Suiv();
+        // STMT();
     case PV_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case IF_TOKEN:
-        CONDSTMT();
-        break;
+        // CONDSTMT();
+        // break;
     case WHILE_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case FOR_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case RETURN_TOKEN:
-        RETURNSTMT();
-        break;
+        // RETURNSTMT();
+        // break;
     case BREAK_TOKEN:
-        BREAKSTMT();
-        break;
+        // BREAKSTMT();
+        // break;
     case CIN_TOKEN:
-        READSTMT();
-        break;
+        // READSTMT();
+        // break;
     case COUT_TOKEN:
-        WRITESTMT();
-        break;
+        // WRITESTMT();
+        // break;
     case COLON_TOKEN:
-        EXP();
-        break;
+        // EXP();
+        // break;
     case NOT_TOKEN:
-        NOTEXP();
-        break;
+        // NOTEXP();
+        // break;
     case PO_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case ACO_TOKEN:
-        SCOPESTMT();
-        break;
+        // SCOPESTMT();
+        // break;
     case ACF_TOKEN:
-        Symbole_Suiv(); //
-        break;
+        // Symbole_Suiv(); //
+        // break;
     case ID_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case IDFCT_TOKEN:
-        CALL();
-        break;
+        // CALL();
+        // break;
     case NUMCONST_TOKEN:
     case CHARCONST_TOKEN:
     case STRINGCONST_TOKEN:
     case TRUE_TOKEN:
     case FALSE_TOKEN:
-        CONSTANT();
-        break;
+        // CONSTANT();
+        // break;
     case TO_TOKEN:
-        Symbole_Suiv();
-        FTO();
-        break;
+        // Symbole_Suiv();
+        // FTO();
+        // break;
     case PF_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case CRF_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case VIR_TOKEN:
-        Symbole_Suiv();
-        EXP();
-        ARGLIST1();
+        // Symbole_Suiv();
+        // EXP();
+        // ARGLIST1();
         break;
     default:
-        //erreur
+        printErreur(AND_TOKEN);
+        //     //erreur
     }
 }
 
@@ -847,6 +909,8 @@ void NOTEXP()
     case ID_TOKEN:
         COMPAREXP();
         break;
+    default:
+        printErreur(NOT_TOKEN);
     }
 }
 
@@ -870,101 +934,102 @@ void COMPAREXTRA()
         SUMEXP();
         break;
     case AND_TOKEN:
-        Symbole_Suiv();
-        NOTEXP();
-        ANDEXP1();
-        break;
+        // Symbole_Suiv();
+        // NOTEXP();
+        // ANDEXP1();
+        // break;
     case OR_TOKEN:
-        Symbole_Suiv();
-        ANDEXP();
-        Symbole_Suiv();
-        SIMPLEEXP1();
+        // Symbole_Suiv();
+        // ANDEXP();
+        // Symbole_Suiv();
+        // SIMPLEEXP1();
     case BY_TOKEN:
-        Symbole_Suiv();
-        SIMPLEEXP();
-        break;
+        // Symbole_Suiv();
+        // SIMPLEEXP();
+        // break;
     case LET_TOKEN:
-        Symbole_Suiv();
-        STMT();
-        break;
+        // Symbole_Suiv();
+        // STMT();
+        // break;
     case THEN_TOKEN:
-        Symbole_Suiv();
-        STMT();
-        Test_Symbole(ELSE_TOKEN);
-        STMT();
-        break;
+        // Symbole_Suiv();
+        // STMT();
+        // Test_Symbole(ELSE_TOKEN);
+        // STMT();
+        // break;
     case DO_TOKEN:
-        Symbole_Suiv();
-        STMT();
+        // Symbole_Suiv();
+        // STMT();
     case PV_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case IF_TOKEN:
-        CONDSTMT();
-        break;
+        // CONDSTMT();
+        // break;
     case WHILE_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case FOR_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case RETURN_TOKEN:
-        RETURNSTMT();
-        break;
+        // RETURNSTMT();
+        // break;
     case BREAK_TOKEN:
-        BREAKSTMT();
-        break;
+        // BREAKSTMT();
+        // break;
     case CIN_TOKEN:
-        READSTMT();
-        break;
+        // READSTMT();
+        // break;
     case COUT_TOKEN:
-        WRITESTMT();
-        break;
+        // WRITESTMT();
+        // break;
     case COLON_TOKEN:
-        EXP();
-        break;
+        // EXP();
+        // break;
     case NOT_TOKEN:
-        NOTEXP();
-        break;
+        // NOTEXP();
+        // break;
     case PO_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case ACO_TOKEN:
-        SCOPESTMT();
-        break;
+        // SCOPESTMT();
+        // break;
     case ACF_TOKEN:
-        Symbole_Suiv(); //
-        break;
+        // Symbole_Suiv(); //
+        // break;
     case ID_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case IDFCT_TOKEN:
-        CALL();
-        break;
+        // CALL();
+        // break;
     case NUMCONST_TOKEN:
     case CHARCONST_TOKEN:
     case STRINGCONST_TOKEN:
     case TRUE_TOKEN:
     case FALSE_TOKEN:
-        CONSTANT();
-        break;
+        // CONSTANT();
+        // break;
     case TO_TOKEN:
-        Symbole_Suiv();
-        FTO();
-        break;
+        // Symbole_Suiv();
+        // FTO();
+        // break;
     case PF_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case CRF_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case VIR_TOKEN:
-        Symbole_Suiv();
-        EXP();
-        ARGLIST1();
+        // Symbole_Suiv();
+        // EXP();
+        // ARGLIST1();
         break;
     default:
-        // erreur
+        printErreur(EG_TOKEN);
+        //     //erreur
     }
 }
 
@@ -981,6 +1046,7 @@ void COMPAROP()
         Symbole_Suiv();
         break;
     default:
+        printErreur(EG_TOKEN);
         // erreur
     }
 }
@@ -1007,105 +1073,106 @@ void SUMEXP1()
     case SUPEG_TOKEN:
     case INF_TOKEN:
     case INFEG_TOKEN:
-        COMPAROP();
-        SUMEXP();
-        break;
+        // COMPAROP();
+        // SUMEXP();
+        // break;
     case AND_TOKEN:
-        Symbole_Suiv();
-        NOTEXP();
-        ANDEXP1();
-        break;
+        // Symbole_Suiv();
+        // NOTEXP();
+        // ANDEXP1();
+        // break;
     case OR_TOKEN:
-        Symbole_Suiv();
-        ANDEXP();
-        Symbole_Suiv();
-        SIMPLEEXP1();
+        // Symbole_Suiv();
+        // ANDEXP();
+        // Symbole_Suiv();
+        // SIMPLEEXP1();
     case BY_TOKEN:
-        Symbole_Suiv();
-        SIMPLEEXP();
-        break;
+        // Symbole_Suiv();
+        // SIMPLEEXP();
+        // break;
     case LET_TOKEN:
-        Symbole_Suiv();
-        STMT();
-        break;
+        // Symbole_Suiv();
+        // STMT();
+        // break;
     case THEN_TOKEN:
-        Symbole_Suiv();
-        STMT();
-        Test_Symbole(ELSE_TOKEN);
-        STMT();
-        break;
+        // Symbole_Suiv();
+        // STMT();
+        // Test_Symbole(ELSE_TOKEN);
+        // STMT();
+        // break;
     case DO_TOKEN:
-        Symbole_Suiv();
-        STMT();
+        // Symbole_Suiv();
+        // STMT();
     case PV_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case IF_TOKEN:
-        CONDSTMT();
-        break;
+        // CONDSTMT();
+        // break;
     case WHILE_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case FOR_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case RETURN_TOKEN:
-        RETURNSTMT();
-        break;
+        // RETURNSTMT();
+        // break;
     case BREAK_TOKEN:
-        BREAKSTMT();
-        break;
+        // BREAKSTMT();
+        // break;
     case CIN_TOKEN:
-        READSTMT();
-        break;
+        // READSTMT();
+        // break;
     case COUT_TOKEN:
-        WRITESTMT();
-        break;
+        // WRITESTMT();
+        // break;
     case COLON_TOKEN:
-        EXP();
-        break;
+        // EXP();
+        // break;
     case NOT_TOKEN:
-        NOTEXP();
-        break;
+        // NOTEXP();
+        // break;
     case PO_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case ACO_TOKEN:
-        SCOPESTMT();
-        break;
+        // SCOPESTMT();
+        // break;
     case ACF_TOKEN:
-        Symbole_Suiv(); //
-        break;
+        // Symbole_Suiv(); //
+        // break;
     case ID_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case IDFCT_TOKEN:
-        CALL();
-        break;
+        // CALL();
+        // break;
     case NUMCONST_TOKEN:
     case CHARCONST_TOKEN:
     case STRINGCONST_TOKEN:
     case TRUE_TOKEN:
     case FALSE_TOKEN:
-        CONSTANT();
-        break;
+        // CONSTANT();
+        // break;
     case TO_TOKEN:
-        Symbole_Suiv();
-        FTO();
-        break;
+        // Symbole_Suiv();
+        // FTO();
+        // break;
     case PF_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case CRF_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case VIR_TOKEN:
-        Symbole_Suiv();
-        EXP();
-        ARGLIST1();
+        // Symbole_Suiv();
+        // EXP();
+        // ARGLIST1();
         break;
     default:
-        //erreur
+        printErreur(PLUS_TOKEN);
+        //     //erreur
     }
 }
 
@@ -1118,6 +1185,7 @@ void SUMOP()
         Symbole_Suiv();
         break;
     default:
+        printErreur(PLUS_TOKEN);
         // erreur
     }
 }
@@ -1141,115 +1209,116 @@ void MULEXP1()
         break;
     case PLUS_TOKEN:
     case MOINS_TOKEN:
-        Symbole_Suiv();
-        SUMOP();
-        break;
+        // SUMOP();
+        // MULEXP();
+        // SUMEXP1();
+        // break;
     case DIFF_TOKEN:
     case EG_TOKEN:
     case SUP_TOKEN:
     case SUPEG_TOKEN:
     case INF_TOKEN:
     case INFEG_TOKEN:
-        Symbole_Suiv();
-        COMPAROP();
-        SUMEXP();
-        break;
+        // COMPAROP();
+        // SUMEXP();
+        // break;
     case AND_TOKEN:
-        Symbole_Suiv();
-        NOTEXP();
-        ANDEXP1();
-        break;
+        // Symbole_Suiv();
+        // NOTEXP();
+        // ANDEXP1();
+        // break;
     case OR_TOKEN:
-        Symbole_Suiv();
-        ANDEXP();
-        Symbole_Suiv();
-        SIMPLEEXP1();
+        // Symbole_Suiv();
+        // ANDEXP();
+        // Symbole_Suiv();
+        // SIMPLEEXP1();
     case BY_TOKEN:
-        Symbole_Suiv();
-        SIMPLEEXP();
-        break;
+        // Symbole_Suiv();
+        // SIMPLEEXP();
+        // break;
     case LET_TOKEN:
-        Symbole_Suiv();
-        STMT();
-        break;
+        // Symbole_Suiv();
+        // STMT();
+        // break;
     case THEN_TOKEN:
-        Symbole_Suiv();
-        STMT();
-        Test_Symbole(ELSE_TOKEN);
-        STMT();
-        break;
+        // Symbole_Suiv();
+        // STMT();
+        // Test_Symbole(ELSE_TOKEN);
+        // STMT();
+        // break;
     case DO_TOKEN:
-        Symbole_Suiv();
-        STMT();
+        // Symbole_Suiv();
+        // STMT();
     case PV_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case IF_TOKEN:
-        CONDSTMT();
-        break;
+        // CONDSTMT();
+        // break;
     case WHILE_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case FOR_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case RETURN_TOKEN:
-        RETURNSTMT();
-        break;
+        // RETURNSTMT();
+        // break;
     case BREAK_TOKEN:
-        BREAKSTMT();
-        break;
+        // BREAKSTMT();
+        // break;
     case CIN_TOKEN:
-        READSTMT();
-        break;
+        // READSTMT();
+        // break;
     case COUT_TOKEN:
-        WRITESTMT();
-        break;
+        // WRITESTMT();
+        // break;
     case COLON_TOKEN:
-        EXP();
-        break;
+        // EXP();
+        // break;
     case NOT_TOKEN:
-        NOTEXP();
-        break;
+        // NOTEXP();
+        // break;
     case PO_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case ACO_TOKEN:
-        SCOPESTMT();
-        break;
+        // SCOPESTMT();
+        // break;
     case ACF_TOKEN:
-        Symbole_Suiv(); //
-        break;
+        // Symbole_Suiv(); //
+        // break;
     case ID_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case IDFCT_TOKEN:
-        CALL();
-        break;
+        // CALL();
+        // break;
     case NUMCONST_TOKEN:
     case CHARCONST_TOKEN:
     case STRINGCONST_TOKEN:
     case TRUE_TOKEN:
     case FALSE_TOKEN:
-        CONSTANT();
-        break;
+        // CONSTANT();
+        // break;
     case TO_TOKEN:
-        Symbole_Suiv();
-        FTO();
-        break;
+        // Symbole_Suiv();
+        // FTO();
+        // break;
     case PF_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case CRF_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case VIR_TOKEN:
-        Symbole_Suiv();
-        EXP();
-        ARGLIST1();
+        // Symbole_Suiv();
+        // EXP();
+        // ARGLIST1();
         break;
     default:
-        //erreur
+        printErreur(MULT_TOKEN);
+        //     //erreur
     }
 }
 
@@ -1263,7 +1332,7 @@ void MULOP()
         Symbole_Suiv();
         break;
     default:
-        // erreur
+        printErreur(MULT_TOKEN);
     }
 }
 
@@ -1284,6 +1353,7 @@ void FACTOR()
         MUTABLE();
         break;
     default:
+        printErreur(ERREUR_TOKEN);
         // erreur
     }
 }
@@ -1306,121 +1376,122 @@ void MUTABLEEXTRA()
     case MULT_TOKEN:
     case DIV_TOKEN:
     case MOD_TOKEN:
-        MULOP();
-        FACTOR();
-        MULEXP1();
-        break;
+        // MULOP();
+        // FACTOR();
+        // MULEXP1();
+        // break;
     case PLUS_TOKEN:
     case MOINS_TOKEN:
-        Symbole_Suiv();
-        SUMOP();
-        break;
+        // SUMOP();
+        // MULEXP();
+        // SUMEXP1();
+        // break;
     case DIFF_TOKEN:
     case EG_TOKEN:
     case SUP_TOKEN:
     case SUPEG_TOKEN:
     case INF_TOKEN:
     case INFEG_TOKEN:
-        Symbole_Suiv();
-        COMPAROP();
-        SUMEXP();
-        break;
+        // COMPAROP();
+        // SUMEXP();
+        // break;
     case AND_TOKEN:
-        Symbole_Suiv();
-        NOTEXP();
-        ANDEXP1();
-        break;
+        // Symbole_Suiv();
+        // NOTEXP();
+        // ANDEXP1();
+        // break;
     case OR_TOKEN:
-        Symbole_Suiv();
-        ANDEXP();
-        Symbole_Suiv();
-        SIMPLEEXP1();
+        // Symbole_Suiv();
+        // ANDEXP();
+        // Symbole_Suiv();
+        // SIMPLEEXP1();
     case BY_TOKEN:
-        Symbole_Suiv();
-        SIMPLEEXP();
-        break;
+        // Symbole_Suiv();
+        // SIMPLEEXP();
+        // break;
     case LET_TOKEN:
-        Symbole_Suiv();
-        STMT();
-        break;
+        // Symbole_Suiv();
+        // STMT();
+        // break;
     case THEN_TOKEN:
-        Symbole_Suiv();
-        STMT();
-        Test_Symbole(ELSE_TOKEN);
-        STMT();
-        break;
+        // Symbole_Suiv();
+        // STMT();
+        // Test_Symbole(ELSE_TOKEN);
+        // STMT();
+        // break;
     case DO_TOKEN:
-        Symbole_Suiv();
-        STMT();
+        // Symbole_Suiv();
+        // STMT();
     case PV_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case IF_TOKEN:
-        CONDSTMT();
-        break;
+        // CONDSTMT();
+        // break;
     case WHILE_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case FOR_TOKEN:
-        ITERSTMT();
-        break;
+        // ITERSTMT();
+        // break;
     case RETURN_TOKEN:
-        RETURNSTMT();
-        break;
+        // RETURNSTMT();
+        // break;
     case BREAK_TOKEN:
-        BREAKSTMT();
-        break;
+        // BREAKSTMT();
+        // break;
     case CIN_TOKEN:
-        READSTMT();
-        break;
+        // READSTMT();
+        // break;
     case COUT_TOKEN:
-        WRITESTMT();
-        break;
+        // WRITESTMT();
+        // break;
     case COLON_TOKEN:
-        EXP();
-        break;
+        // EXP();
+        // break;
     case NOT_TOKEN:
-        NOTEXP();
-        break;
+        // NOTEXP();
+        // break;
     case PO_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case ACO_TOKEN:
-        SCOPESTMT();
-        break;
+        // SCOPESTMT();
+        // break;
     case ACF_TOKEN:
-        Symbole_Suiv(); //
-        break;
+        // Symbole_Suiv(); //
+        // break;
     case ID_TOKEN:
-        EXPSTMT();
-        break;
+        // EXPSTMT();
+        // break;
     case IDFCT_TOKEN:
-        CALL();
-        break;
+        // CALL();
+        // break;
     case NUMCONST_TOKEN:
     case CHARCONST_TOKEN:
     case STRINGCONST_TOKEN:
     case TRUE_TOKEN:
     case FALSE_TOKEN:
-        CONSTANT();
-        break;
+        // CONSTANT();
+        // break;
     case TO_TOKEN:
-        Symbole_Suiv();
-        FTO();
-        break;
+        // Symbole_Suiv();
+        // FTO();
+        // break;
     case PF_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case CRF_TOKEN:
-        Symbole_Suiv();
-        break;
+        // Symbole_Suiv();
+        // break;
     case VIR_TOKEN:
-        Symbole_Suiv();
-        EXP();
-        ARGLIST1();
+        // Symbole_Suiv();
+        // EXP();
+        // ARGLIST1();
         break;
     default:
-        //erreur
+        printErreur(CRO_TOKEN);
+        //     //erreur
     }
 }
 
@@ -1429,6 +1500,7 @@ void IMMUTABLE()
     switch (Cour_Token.token)
     {
     case PO_TOKEN:
+        Symbole_Suiv();
         EXP();
         Test_Symbole(PF_TOKEN);
         break;
@@ -1443,6 +1515,7 @@ void IMMUTABLE()
         CONSTANT();
         break;
     default:
+        printErreur(ERREUR_TOKEN);
         // erreur
     }
 }
@@ -1474,8 +1547,10 @@ void ARGS()
         CONSTANT();
         break;
     case PF_TOKEN:
-        Symbole_Suiv();
+        break;
+    // Symbole_Suiv();
     default:
+        printErreur(ERREUR_TOKEN);
         // erreur
     }
 }
@@ -1491,13 +1566,15 @@ void ARGLIST1()
     switch (Cour_Token.token)
     {
     case VIR_TOKEN:
+        Symbole_Suiv();
         EXP();
         ARGLIST1();
         break;
     case PF_TOKEN:
-        Symbole_Suiv();
+        // Symbole_Suiv();
         break;
     default:
+        printErreur(VIR_TOKEN);
         // erreur
     }
 }
@@ -1514,6 +1591,7 @@ void CONSTANT()
         Symbole_Suiv();
         break;
     default:
+        printErreur(ERREUR_TOKEN);
         // erreur
     }
 }

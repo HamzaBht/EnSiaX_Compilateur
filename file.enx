@@ -2,27 +2,24 @@ char zev[10]= "corgis";
 char  s=  'S';
 char yurt[20];
 int x=42, y=666;
-int ant(int bat, cat[]; bool dog, elk; int fox; char gnu)
+int ant(int bat,bool dog,char gnu)
 {
 int goat, hog[100];
-gnu = 'w';
-if dog and elk or bat > cat[3] then dog = not dog;
-else fox++;
+: gnu = 'w';
+if dog and elk or bat > cat[3] then : dog = ! dog ;
+else :fox =1;
 if bat <= fox let {
 while dog do {
 int hog; // hog in new scope
-hog = fox;
-dog = fred(fox++, cat)>666;
+:hog = fox;
+:dog = fred(fox, cat)>666;
 if hog>bat then break;
-else if fox!=0 then fox += 7;
+else if fox!=0 let :fox = fox + 7;
 }
 }
 for i = 0 to 3 do cout(zev[i]); // outnl();
-yurt = zev;
-yurt[3] = zev[2];
+:yurt = zev;
+:yurt[3] = zev[2];
 return (fox+bat*cat[bat])/fox;
 }
-// note that functions are defined using a statement
-int max(int a, b) if a>b then return a; else return b;
-// use the max operator
-int max3(int a, b, c) return a :>: b :>: c;
+
