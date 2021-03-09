@@ -1,25 +1,6 @@
 char zev[10]= "corgis";
-char  s=  'S';
+char  =  'S';
 char yurt[20];
-int x=42, y=666;
-int ant(int bat,bool dog,char gnu)
-{
-int goat, hog[100];
-: gnu = 'w';
-if dog and elk or bat > cat[3] then : dog = ! dog ;
-else :fox =1;
-if bat <= fox let {
-while dog do {
-int hog; // hog in new scope
-:hog = fox;
-:dog = fred(fox, cat)>666;
-if hog>bat then break;
-else if fox!=0 let :fox = fox + 7;
-}
-}
-for i = 0 to 3 do cout(zev[i]); // outnl();
-:yurt = zev;
-:yurt[3] = zev[2];
-return (fox+bat*cat[bat])/fox;
-}
+int x=42 , y=666;
+
 
