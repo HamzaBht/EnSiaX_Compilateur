@@ -127,6 +127,31 @@ typedef enum
     WHILE_TOKEN_ERREUR,       // while
     DO_TOKEN_ERREUR,          // do
     ID_TOKEN_ERREUR,          // id
+    VIR_PV_ERREUR,
+    AFF_VIR_PV_ERREUR,
+    AFF_VIR_PV_CRO_ERREUR,
+    INT_PF_ERREUR,
+    VIR_PF_ERREUR,
+    CRO_VIR_PF_ERREUR,
+    STMT_ERREUR,
+    EXPSTMT_ERREUR,
+    LOCALDECLS1_ERREUR,
+    STMTLIST1_ERREUR,
+    ITERSTMT_ERREUR,
+    FSIMPLEEXP1_ERREUR,
+    EXP_ERREUR,
+    SIMPLEEXP1_ERREUR,
+    ANDEXP1_ERREUR,
+    NOTEXP_ERREUR,
+    COMPAREXTRA_ERREUR,
+    SUMEXP1_ERREUR,
+    MULEXP1_ERREUR,
+    FACTOR_ERREUR,
+    MUTABLEEXTRA_ERREUR,
+    IMMUTABLE_ERREUR,
+    ARGS_ERREUR,
+    CONSTANT_ERREUR,
+    FIN_TOKEN_ERREUR,
 } Codes_LEX_Erreurs;
 typedef struct
 {
@@ -225,7 +250,7 @@ Maptoken key_words[24] = {
     {DO_TOKEN, "DO", ""},
 };
 
-Maptoken_erreur maperror[50] = {
+Maptoken_erreur maperror[100] = {
     {CRO_TOKEN_ERREUR, " un '['est  manquant"},   // [
     {CRF_TOKEN_ERREUR, " un ']'est  manquant"},   // ]
     {ACO_TOKEN_ERREUR, " un '{'est  manquant"},   // {
@@ -273,8 +298,31 @@ Maptoken_erreur maperror[50] = {
     {WHILE_TOKEN_ERREUR, " un 'WHILE'est  manquant"},                                      // while
     {DO_TOKEN_ERREUR, " un 'DO'est  manquant"},
     {ID_TOKEN_ERREUR, " un identifiant est manquant"}, // do
-    {FIN_TOKEN, "erreur"},
-    {ERREUR_TOKEN, " erreur de syntaxe "}};
+    {VIR_PV_ERREUR, " ',' or ';' expected"},
+    {AFF_VIR_PV_ERREUR, " '=' or ',' or ';' expected "},
+    {AFF_VIR_PV_CRO_ERREUR, " '=' or ',' or ';' or '[' expected "},
+    {INT_PF_ERREUR, " prototype or ')' expected "},
+    {VIR_PF_ERREUR, " ',' or ')' expected"},
+    {CRO_VIR_PF_ERREUR, " '[' or ',' or ')' expected"},
+    {STMT_ERREUR, " the beging of the the statement is invalid "},
+    {EXPSTMT_ERREUR, " Expr or ';' expected "},
+    {LOCALDECLS1_ERREUR, " prototype or Statement expected "},
+    {STMTLIST1_ERREUR, " '}' or statement expected"},
+    {ITERSTMT_ERREUR, " Iteration Statement expected"},
+    {FSIMPLEEXP1_ERREUR, " then or let or by or Expr expected"},
+    {EXP_ERREUR, " ':' or Expr expected "},
+    {SIMPLEEXP1_ERREUR, " ' or ' or Statement expected"},
+    {ANDEXP1_ERREUR, " ' AND ' or Statement expected"},
+    {NOTEXP_ERREUR, " '!' or ComparaisonExpr expected "},
+    {COMPAREXTRA_ERREUR, " ComparOperator or Statement expected "},
+    {SUMEXP1_ERREUR, " SumOperator or Statement expected "},
+    {MULEXP1_ERREUR, "MulOperator or Statement expected "},
+    {FACTOR_ERREUR, "Factor expected"},
+    {MUTABLEEXTRA_ERREUR, " '[' or Expr expected"},
+    {IMMUTABLE_ERREUR, " '(' or Function call or Value expected  "},
+    {ARGS_ERREUR, "Arguments or ')'  expected"},
+    {CONSTANT_ERREUR, " Value expected "},
+};
 
 //nombre total des token
 int nbTokens = 0, ligne = 1, colonne = 1, indx;
@@ -283,7 +331,7 @@ char cour_char;
 // notre fichier a complier
 FILE *file;
 //courant token
-Maptoken Cour_Token, Cour_symbole, prev_token;
+Maptoken Cour_Token, Cour_symbole, prev_token, prev_Erreur;
 //linked list(tokens table)
 typedef struct node
 {
