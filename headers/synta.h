@@ -2,17 +2,6 @@
 
 struct node *ptr = NULL;
 
-void printErreur(Codes_LEX token)
-{
-    if (Cour_Token.ligne != prev_Erreur.ligne || Cour_Token.colonne != prev_Erreur.colonne)
-    {
-        printf("\nErreur :%d :%d :  %s \n", Cour_Token.ligne, Cour_Token.colonne, maperror[token].message_erreur);
-        prev_Erreur.colonne = Cour_Token.colonne;
-        prev_Erreur.ligne = Cour_Token.ligne;
-        // exit(-1);
-    }
-}
-
 void Symbole_Suiv()
 {
     if (ptr == NULL)
@@ -21,6 +10,13 @@ void Symbole_Suiv()
     ptr = ptr->next;
     prev_token = Cour_Token;
     Cour_Token = ptr->info;
+}
+
+void printErreur(Codes_LEX token)
+{
+    printf("\n Erreur Avant Ligne :%d  Colonne : %d  ' %s '  %s \n", Cour_Token.ligne, Cour_Token.colonne, Cour_Token.value, maperror[token].message_erreur);
+    if (Cour_Token.token != ID_TOKEN)
+        Symbole_Suiv();
 }
 
 void Test_Symbole(Codes_LEX token)
@@ -76,34 +72,28 @@ void FTYPE()
         break;
     default:
         printErreur(ID_TOKEN);
-        switch (Cour_Token.token)
+        while (Cour_Token.token != PV_TOKEN && Cour_Token.token != INT_TOKEN && Cour_Token.token != BOOL_TOKEN && Cour_Token.token != CHAR_TOKEN && Cour_Token.token != FIN_TOKEN && Cour_Token.token != PO_TOKEN)
+            Symbole_Suiv();
+        if (Cour_Token.token == PV_TOKEN)
+            Symbole_Suiv();
+        else if (Cour_Token.token == PO_TOKEN)
         {
-        case VIR_TOKEN:
-        case AFF_TOKEN:
-        case PV_TOKEN:
-            VARDECLLIST();
-            Test_Symbole(PV_TOKEN);
-        case PO_TOKEN:
-            Test_Symbole(PO_TOKEN);
+            Symbole_Suiv();
             PARAMS();
             Test_Symbole(PF_TOKEN);
             SCOPESTMT();
-            break;
         }
-
         break;
     }
 }
 void VARDECLLIST()
 {
-    // printf("VARDECLLIST ");
     VARVAL();
     VARDECLLIST1();
 }
 
 void VARDECLLIST1()
 {
-    // printf("VARDECLLIST1 ");
     switch (Cour_Token.token)
     {
     case VIR_TOKEN:
@@ -117,21 +107,19 @@ void VARDECLLIST1()
     case PV_TOKEN:
         break;
     default:
-        printErreur(VIR_PV_ERREUR);
+        // printErreur(VIR_PV_ERREUR);
         break;
     }
 }
 
 void VARVAL()
 {
-    // printf("VARVAL ");
     VARID();
     VARVALLIST();
 }
 
 void VARVALLIST()
 {
-    // printf("VARVALLIST ");
     switch (Cour_Token.token)
     {
     case AFF_TOKEN:
@@ -139,33 +127,28 @@ void VARVALLIST()
         SIMPLEEXP();
         break;
     case VIR_TOKEN:
-        // VARVAL();
-        // VARDECLLIST1();
-        break;
     case PV_TOKEN:
-        break;
     default:
-        printErreur(AFF_VIR_PV_ERREUR);
+        // printErreur(AFF_VIR_PV_ERREUR);
+        while (Cour_Token.token != VIR_TOKEN && Cour_Token.token != PV_TOKEN && Cour_Token.token != INT_TOKEN && Cour_Token.token != CHAR_TOKEN && Cour_Token.token != BOOL_TOKEN)
+            Symbole_Suiv();
         break;
         //     //erreur
     }
 }
 void VARID()
 {
-    // printf("VARID ");
     Test_Symbole(ID_TOKEN);
     VARIDEXTRA();
 }
 
 void VARIDEXTRA()
 {
-    // printf("VARIDEXTRA ");
     switch (Cour_Token.token)
     {
     case CRO_TOKEN: //[
         Symbole_Suiv();
         Test_Symbole(NUMCONST_TOKEN);
-        //Symbole_Suiv();
         Test_Symbole(CRF_TOKEN); //]
         break;
     case PV_TOKEN: //1
@@ -174,7 +157,7 @@ void VARIDEXTRA()
         break;
     default:
         printErreur(AFF_VIR_PV_CRO_ERREUR);
-        while (Cour_Token.token != PV_TOKEN && Cour_Token.token != AFF_TOKEN && Cour_Token.token != VIR_TOKEN)
+        while (Cour_Token.token != PV_TOKEN && Cour_Token.token != FIN_TOKEN)
             Symbole_Suiv();
         break;
     }
@@ -182,7 +165,6 @@ void VARIDEXTRA()
 
 void TYPE()
 {
-    // printf("TYPE %s ", Cour_Token.value);
     switch (Cour_Token.token)
     {
     case INT_TOKEN:
@@ -192,7 +174,6 @@ void TYPE()
         break;
     default:
         printErreur(INT_TOKEN);
-        //     //erreur
     }
 }
 
@@ -209,6 +190,8 @@ void PARAMS()
         break;
     default:
         printErreur(INT_PF_ERREUR);
+        while (Cour_Token.token != PF_TOKEN)
+            Symbole_Suiv();
         break;
         //     //erreur
     }
@@ -236,6 +219,8 @@ void PARAMSLIST1()
         break;
     default:
         printErreur(VIR_PF_ERREUR);
+        while (Cour_Token.token != PF_TOKEN)
+            Symbole_Suiv();
         //     //erreur
     }
 }
@@ -265,6 +250,8 @@ void EXTRA()
         break;
     default:
         printErreur(CRO_VIR_PF_ERREUR);
+        while (Cour_Token.token != VIR_TOKEN && Cour_Token.token != PF_TOKEN)
+            Symbole_Suiv();
         break;
         // erreur
     }
@@ -342,9 +329,7 @@ void EXPSTMT()
     case TRUE_TOKEN:
     case FALSE_TOKEN:
         EXP();
-        // printf("im here ");
         Test_Symbole(PV_TOKEN);
-        // printf("im here ");
         break;
     case PV_TOKEN:
         Symbole_Suiv();
@@ -401,6 +386,8 @@ void LOCALDECLS1()
         break;
     default:
         printErreur(LOCALDECLS1_ERREUR);
+        while (Cour_Token.token != PV_TOKEN && Cour_Token.token != IF_TOKEN && Cour_Token.token != FOR_TOKEN && Cour_Token.token != WHILE_TOKEN && Cour_Token.token && Cour_Token.token != RETURN_TOKEN && Cour_Token.token != BREAK_TOKEN && Cour_Token.token != CIN_TOKEN && Cour_Token.token != COUT_TOKEN && Cour_Token.token != ACO_TOKEN && Cour_Token.token != PO_TOKEN && Cour_Token.token != ACF_TOKEN && Cour_Token.token != COLON_TOKEN && Cour_Token.token != NOT_TOKEN && Cour_Token.token != FALSE_TOKEN && Cour_Token.token != TRUE_TOKEN && Cour_Token.token != NUMCONST_TOKEN && Cour_Token.token != CHAR_TOKEN && Cour_Token.token != STRINGCONST_TOKEN && Cour_Token.token != ID_TOKEN && Cour_Token.token != IDFCT_TOKEN)
+            Symbole_Suiv();
         //     //erreur
     }
 }
@@ -444,10 +431,11 @@ void STMTLIST1()
         STMTLIST1();
         break;
     case ACF_TOKEN:
-        //}
         break;
     default:
         printErreur(STMTLIST1_ERREUR);
+        while (Cour_Token.token != ACF_TOKEN && Cour_Token.token != FIN_TOKEN)
+            Symbole_Suiv();
         //     //erreur
     }
 }
@@ -546,6 +534,8 @@ void FSIMPLEEXP1()
         break;
     default:
         printErreur(FSIMPLEEXP1_ERREUR);
+        while (Cour_Token.token != DO_TOKEN && Cour_Token.token != PV_TOKEN && Cour_Token.token != IF_TOKEN && Cour_Token.token != FOR_TOKEN && Cour_Token.token != WHILE_TOKEN && Cour_Token.token && Cour_Token.token != RETURN_TOKEN && Cour_Token.token != BREAK_TOKEN && Cour_Token.token != CIN_TOKEN && Cour_Token.token != COUT_TOKEN && Cour_Token.token != ACO_TOKEN && Cour_Token.token != PO_TOKEN && Cour_Token.token != ACF_TOKEN && Cour_Token.token != COLON_TOKEN && Cour_Token.token != NOT_TOKEN && Cour_Token.token != FALSE_TOKEN && Cour_Token.token != TRUE_TOKEN && Cour_Token.token != NUMCONST_TOKEN && Cour_Token.token != CHAR_TOKEN && Cour_Token.token != STRINGCONST_TOKEN && Cour_Token.token != ID_TOKEN && Cour_Token.token != IDFCT_TOKEN)
+            Symbole_Suiv();
         //     //erreur
     }
 }
@@ -599,10 +589,11 @@ void LISTID1()
         }
         LISTID1();
     case PF_TOKEN:
-        // Test_Symbole(PV_TOKEN);
         break;
     default:
         printErreur(VIR_PF_ERREUR);
+        while (Cour_Token.token != PF_TOKEN)
+            Symbole_Suiv();
         //     //erreur
     }
 }
@@ -630,7 +621,8 @@ void EXP()
         break;
     default:
         printErreur(EXP_ERREUR);
-        // erreur
+        while (Cour_Token.token != PV_TOKEN && Cour_Token.token != PF_TOKEN && Cour_Token.token != FIN_TOKEN && Cour_Token.token != VIR_TOKEN && Cour_Token.token != CRF_TOKEN)
+            Symbole_Suiv();
     }
 }
 
@@ -652,12 +644,8 @@ void SIMPLEEXP1()
         }
         SIMPLEEXP1();
     case BY_TOKEN:
-        // SIMPLEEXP();
-        break;
     case LET_TOKEN:
-        break;
     case THEN_TOKEN:
-        break;
     case DO_TOKEN:
     case PV_TOKEN:
     case IF_TOKEN:
@@ -685,7 +673,9 @@ void SIMPLEEXP1()
     case VIR_TOKEN:
         break;
     default:
-        printErreur(SIMPLEEXP1_ERREUR);
+        // printErreur(SIMPLEEXP1_ERREUR);
+        while (Cour_Token.token != DO_TOKEN && Cour_Token.token != LET_TOKEN && Cour_Token.token != THEN_TOKEN && Cour_Token.token != BY_TOKEN && Cour_Token.token != PV_TOKEN && Cour_Token.token != IF_TOKEN && Cour_Token.token != FOR_TOKEN && Cour_Token.token != WHILE_TOKEN && Cour_Token.token && Cour_Token.token != RETURN_TOKEN && Cour_Token.token != BREAK_TOKEN && Cour_Token.token != CIN_TOKEN && Cour_Token.token != COUT_TOKEN && Cour_Token.token != ACO_TOKEN && Cour_Token.token != PO_TOKEN && Cour_Token.token != ACF_TOKEN && Cour_Token.token != COLON_TOKEN && Cour_Token.token != NOT_TOKEN && Cour_Token.token != FALSE_TOKEN && Cour_Token.token != TRUE_TOKEN && Cour_Token.token != NUMCONST_TOKEN && Cour_Token.token != CHAR_TOKEN && Cour_Token.token != STRINGCONST_TOKEN && Cour_Token.token != ID_TOKEN && Cour_Token.token != IDFCT_TOKEN)
+            Symbole_Suiv();
 
         //     //erreur
     }
@@ -739,9 +729,9 @@ void ANDEXP1()
     case CRF_TOKEN:
     case VIR_TOKEN:
         break;
-        // default:
-        //     printErreur(ANDEXP1_ERREUR);
-        //     //erreur
+    default:
+        while (Cour_Token.token != OR_TOKEN && Cour_Token.token != DO_TOKEN && Cour_Token.token != LET_TOKEN && Cour_Token.token != THEN_TOKEN && Cour_Token.token != BY_TOKEN && Cour_Token.token != PV_TOKEN && Cour_Token.token != IF_TOKEN && Cour_Token.token != FOR_TOKEN && Cour_Token.token != WHILE_TOKEN && Cour_Token.token && Cour_Token.token != RETURN_TOKEN && Cour_Token.token != BREAK_TOKEN && Cour_Token.token != CIN_TOKEN && Cour_Token.token != COUT_TOKEN && Cour_Token.token != ACO_TOKEN && Cour_Token.token != PO_TOKEN && Cour_Token.token != ACF_TOKEN && Cour_Token.token != COLON_TOKEN && Cour_Token.token != NOT_TOKEN && Cour_Token.token != FALSE_TOKEN && Cour_Token.token != TRUE_TOKEN && Cour_Token.token != NUMCONST_TOKEN && Cour_Token.token != CHAR_TOKEN && Cour_Token.token != STRINGCONST_TOKEN && Cour_Token.token != ID_TOKEN && Cour_Token.token != IDFCT_TOKEN)
+            Symbole_Suiv();
     }
 }
 
@@ -765,8 +755,8 @@ void NOTEXP()
         COMPAREXP();
         break;
     default:
-        printErreur(NOTEXP_ERREUR);
-        while (Cour_Token.token != PV_TOKEN && Cour_Token.token != VIR_TOKEN && Cour_Token.token != FIN_TOKEN && Cour_Token.token != ACF_TOKEN && Cour_Token.token != ACO_TOKEN)
+        // printErreur(NOTEXP_ERREUR);
+        while (Cour_Token.token != AND_TOKEN && Cour_Token.token != DO_TOKEN && Cour_Token.token != LET_TOKEN && Cour_Token.token != THEN_TOKEN && Cour_Token.token != BY_TOKEN && Cour_Token.token != PV_TOKEN && Cour_Token.token != IF_TOKEN && Cour_Token.token != FOR_TOKEN && Cour_Token.token != WHILE_TOKEN && Cour_Token.token && Cour_Token.token != RETURN_TOKEN && Cour_Token.token != BREAK_TOKEN && Cour_Token.token != CIN_TOKEN && Cour_Token.token != COUT_TOKEN && Cour_Token.token != ACO_TOKEN && Cour_Token.token != PO_TOKEN && Cour_Token.token != ACF_TOKEN && Cour_Token.token != COLON_TOKEN && Cour_Token.token != NOT_TOKEN && Cour_Token.token != FALSE_TOKEN && Cour_Token.token != TRUE_TOKEN && Cour_Token.token != NUMCONST_TOKEN && Cour_Token.token != CHAR_TOKEN && Cour_Token.token != STRINGCONST_TOKEN && Cour_Token.token != ID_TOKEN && Cour_Token.token != IDFCT_TOKEN)
             Symbole_Suiv();
     }
 }
@@ -821,8 +811,10 @@ void COMPAREXTRA()
     case CRF_TOKEN:
     case VIR_TOKEN:
         break;
-        // default:
+    default:
         // printErreur(COMPAREXTRA_ERREUR);
+        while (Cour_Token.token != AND_TOKEN && Cour_Token.token != DO_TOKEN && Cour_Token.token != LET_TOKEN && Cour_Token.token != THEN_TOKEN && Cour_Token.token != BY_TOKEN && Cour_Token.token != PV_TOKEN && Cour_Token.token != IF_TOKEN && Cour_Token.token != FOR_TOKEN && Cour_Token.token != WHILE_TOKEN && Cour_Token.token && Cour_Token.token != RETURN_TOKEN && Cour_Token.token != BREAK_TOKEN && Cour_Token.token != CIN_TOKEN && Cour_Token.token != COUT_TOKEN && Cour_Token.token != ACO_TOKEN && Cour_Token.token != PO_TOKEN && Cour_Token.token != ACF_TOKEN && Cour_Token.token != COLON_TOKEN && Cour_Token.token != NOT_TOKEN && Cour_Token.token != FALSE_TOKEN && Cour_Token.token != TRUE_TOKEN && Cour_Token.token != NUMCONST_TOKEN && Cour_Token.token != CHAR_TOKEN && Cour_Token.token != STRINGCONST_TOKEN && Cour_Token.token != ID_TOKEN && Cour_Token.token != IDFCT_TOKEN)
+            Symbole_Suiv();
         //     //erreur
     }
 }
@@ -841,7 +833,6 @@ void COMPAROP()
         break;
     default:
         printErreur(EG_TOKEN);
-        // erreur
     }
 }
 
@@ -901,7 +892,9 @@ void SUMEXP1()
     case CRF_TOKEN:
     case VIR_TOKEN:
         break;
-        // default:
+    default:
+        while (Cour_Token.token != AND_TOKEN && Cour_Token.token != DO_TOKEN && Cour_Token.token != LET_TOKEN && Cour_Token.token != THEN_TOKEN && Cour_Token.token != BY_TOKEN && Cour_Token.token != PV_TOKEN && Cour_Token.token != IF_TOKEN && Cour_Token.token != FOR_TOKEN && Cour_Token.token != WHILE_TOKEN && Cour_Token.token && Cour_Token.token != RETURN_TOKEN && Cour_Token.token != BREAK_TOKEN && Cour_Token.token != CIN_TOKEN && Cour_Token.token != COUT_TOKEN && Cour_Token.token != ACO_TOKEN && Cour_Token.token != PO_TOKEN && Cour_Token.token != ACF_TOKEN && Cour_Token.token != COLON_TOKEN && Cour_Token.token != NOT_TOKEN && Cour_Token.token != FALSE_TOKEN && Cour_Token.token != TRUE_TOKEN && Cour_Token.token != NUMCONST_TOKEN && Cour_Token.token != CHAR_TOKEN && Cour_Token.token != STRINGCONST_TOKEN && Cour_Token.token != ID_TOKEN && Cour_Token.token != IDFCT_TOKEN)
+            Symbole_Suiv();
         // printErreur(SUMEXP1_ERREUR);
         //     //erreur
     }
@@ -980,9 +973,9 @@ void MULEXP1()
     case CRF_TOKEN:
     case VIR_TOKEN:
         break;
-        // default:
-        // printErreur(MULT_TOKEN);
-        //     //erreur
+    default:
+        while (Cour_Token.token != AND_TOKEN && Cour_Token.token != DO_TOKEN && Cour_Token.token != LET_TOKEN && Cour_Token.token != THEN_TOKEN && Cour_Token.token != BY_TOKEN && Cour_Token.token != PV_TOKEN && Cour_Token.token != IF_TOKEN && Cour_Token.token != FOR_TOKEN && Cour_Token.token != WHILE_TOKEN && Cour_Token.token && Cour_Token.token != RETURN_TOKEN && Cour_Token.token != BREAK_TOKEN && Cour_Token.token != CIN_TOKEN && Cour_Token.token != COUT_TOKEN && Cour_Token.token != ACO_TOKEN && Cour_Token.token != PO_TOKEN && Cour_Token.token != ACF_TOKEN && Cour_Token.token != COLON_TOKEN && Cour_Token.token != NOT_TOKEN && Cour_Token.token != FALSE_TOKEN && Cour_Token.token != TRUE_TOKEN && Cour_Token.token != NUMCONST_TOKEN && Cour_Token.token != CHAR_TOKEN && Cour_Token.token != STRINGCONST_TOKEN && Cour_Token.token != ID_TOKEN && Cour_Token.token != IDFCT_TOKEN)
+            Symbole_Suiv();
     }
 }
 
@@ -1016,9 +1009,9 @@ void FACTOR()
     case ID_TOKEN:
         MUTABLE();
         break;
-        // default:
-        // printErreur(FACTOR_ERREUR);
-        // erreur
+    default:
+        while (Cour_Token.token != AND_TOKEN && Cour_Token.token != DO_TOKEN && Cour_Token.token != LET_TOKEN && Cour_Token.token != THEN_TOKEN && Cour_Token.token != BY_TOKEN && Cour_Token.token != PV_TOKEN && Cour_Token.token != IF_TOKEN && Cour_Token.token != FOR_TOKEN && Cour_Token.token != WHILE_TOKEN && Cour_Token.token && Cour_Token.token != RETURN_TOKEN && Cour_Token.token != BREAK_TOKEN && Cour_Token.token != CIN_TOKEN && Cour_Token.token != COUT_TOKEN && Cour_Token.token != ACO_TOKEN && Cour_Token.token != PO_TOKEN && Cour_Token.token != ACF_TOKEN && Cour_Token.token != COLON_TOKEN && Cour_Token.token != NOT_TOKEN && Cour_Token.token != FALSE_TOKEN && Cour_Token.token != TRUE_TOKEN && Cour_Token.token != NUMCONST_TOKEN && Cour_Token.token != CHAR_TOKEN && Cour_Token.token != STRINGCONST_TOKEN && Cour_Token.token != ID_TOKEN && Cour_Token.token != IDFCT_TOKEN)
+            Symbole_Suiv();
     }
 }
 
@@ -1081,8 +1074,9 @@ void MUTABLEEXTRA()
     case VIR_TOKEN:
         break;
     default:
-        printErreur(MUTABLEEXTRA_ERREUR);
-        //     //erreur
+        // printErreur(MUTABLEEXTRA_ERREUR);
+        while (Cour_Token.token != AND_TOKEN && Cour_Token.token != DO_TOKEN && Cour_Token.token != LET_TOKEN && Cour_Token.token != THEN_TOKEN && Cour_Token.token != BY_TOKEN && Cour_Token.token != PV_TOKEN && Cour_Token.token != IF_TOKEN && Cour_Token.token != FOR_TOKEN && Cour_Token.token != WHILE_TOKEN && Cour_Token.token && Cour_Token.token != RETURN_TOKEN && Cour_Token.token != BREAK_TOKEN && Cour_Token.token != CIN_TOKEN && Cour_Token.token != COUT_TOKEN && Cour_Token.token != ACO_TOKEN && Cour_Token.token != PO_TOKEN && Cour_Token.token != ACF_TOKEN && Cour_Token.token != COLON_TOKEN && Cour_Token.token != NOT_TOKEN && Cour_Token.token != FALSE_TOKEN && Cour_Token.token != TRUE_TOKEN && Cour_Token.token != NUMCONST_TOKEN && Cour_Token.token != CHAR_TOKEN && Cour_Token.token != STRINGCONST_TOKEN && Cour_Token.token != ID_TOKEN && Cour_Token.token != IDFCT_TOKEN)
+            Symbole_Suiv();
     }
 }
 
@@ -1106,8 +1100,8 @@ void IMMUTABLE()
         CONSTANT();
         break;
     default:
-        printErreur(IMMUTABLE_ERREUR);
-        // erreur
+        while (Cour_Token.token != AND_TOKEN && Cour_Token.token != DO_TOKEN && Cour_Token.token != LET_TOKEN && Cour_Token.token != THEN_TOKEN && Cour_Token.token != BY_TOKEN && Cour_Token.token != PV_TOKEN && Cour_Token.token != IF_TOKEN && Cour_Token.token != FOR_TOKEN && Cour_Token.token != WHILE_TOKEN && Cour_Token.token && Cour_Token.token != RETURN_TOKEN && Cour_Token.token != BREAK_TOKEN && Cour_Token.token != CIN_TOKEN && Cour_Token.token != COUT_TOKEN && Cour_Token.token != ACO_TOKEN && Cour_Token.token != PO_TOKEN && Cour_Token.token != ACF_TOKEN && Cour_Token.token != COLON_TOKEN && Cour_Token.token != NOT_TOKEN && Cour_Token.token != FALSE_TOKEN && Cour_Token.token != TRUE_TOKEN && Cour_Token.token != NUMCONST_TOKEN && Cour_Token.token != CHAR_TOKEN && Cour_Token.token != STRINGCONST_TOKEN && Cour_Token.token != ID_TOKEN && Cour_Token.token != IDFCT_TOKEN)
+            Symbole_Suiv();
     }
 }
 
@@ -1140,8 +1134,8 @@ void ARGS()
     case PF_TOKEN:
         break;
     default:
-        printErreur(ARGS_ERREUR);
-        // erreur
+        while (Cour_Token.token != PV_TOKEN && Cour_Token.token != PF_TOKEN)
+            Symbole_Suiv();
     }
 }
 
@@ -1167,6 +1161,8 @@ void ARGLIST1()
         break;
     default:
         printErreur(VIR_PF_ERREUR);
+        while (Cour_Token.token != PV_TOKEN && Cour_Token.token != PF_TOKEN)
+            Symbole_Suiv();
     }
 }
 
@@ -1183,6 +1179,5 @@ void CONSTANT()
         break;
     default:
         printErreur(CONSTANT_ERREUR);
-        // erreur
     }
 }

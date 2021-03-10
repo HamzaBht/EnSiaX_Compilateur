@@ -1,6 +1,26 @@
-int ant()
+char bat[10]="Compilation";
+char hza[20];
+int x=42, y=666;
+int ant( bool dog, char gnu)
 {
-:soso = 2,;:dodo=3;
+int goat, hog[100];
+:gnu = 'W';
+:goat =3*cat; // Comment
+if dog and elk or bat > cat[3] then :dog =!dog;
+else :fox =3;
+if cat <= fox let {
+while dog do {
+int hog; // Scope variable 
+:hog = cat;
+:dog = eat(fox, cat)!=true;
+if hog>cat then break;
+else if fox!=0 let :fox = 7;
 }
-
-
+}
+for i = 0 to size(cat) do cout(cat[i]); 
+:hza = cat;
+:hza[i] = cat[2];
+return (fox+cat*cat[cat])/-fox;
+}
+// note that functions are defined using a statement
+int max(int a, b) {if a>b then return a; else return b;}

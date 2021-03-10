@@ -4,12 +4,7 @@
 #include <ctype.h>
 #include <stdbool.h>
 #define SIZE 10007
-// typedef enum
-// {
-//     ARRAY,
-//     STRING,
-//     RECORD
-// } np_type;
+
 typedef enum
 {
     ERROR,
@@ -431,3 +426,5 @@ void ARGS();
 void ARGLIST();
 void ARGLIST1();
 void CONSTANT();
+
+//---------Error_Recovery

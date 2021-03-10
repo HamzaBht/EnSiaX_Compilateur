@@ -22,7 +22,6 @@ void read_string()
         isStringConst = true;
     else
         isCharConst = true;
-    // printf("%c ", cour_char);
 
     read_char();
     while (((cour_char >= 'a' && cour_char <= 'z') || (cour_char >= '0' && cour_char <= '9')) || ((cour_char >= 'A' && cour_char <= 'Z')) && nbchar <= 30)
@@ -86,7 +85,6 @@ void read_number()
 void read_symbole()
 {
 
-    // memset(cour_noeud.token_str,'', sizeof(cour_noeud.token_str));
     memset(Cour_Token.identif, '\0', 31);
     memset(Cour_Token.value, '\0', 31);
     Cour_Token.token = NULL_TOKEN;
@@ -409,7 +407,9 @@ void Analex(const char *filename)
     Cour_Token.token = FIN_TOKEN;
     strcpy(Cour_Token.identif, "FIN_TOKEN");
     push(Cour_Token);
-    display();
+    for (int i = 0; i < curseur - 1; i++)
+        printf("\n %s %d %d ", mes_err[Error_table[i].code_err].message_erreur, Error_table[i].ligneErreur, Error_table[i].colonneErreur);
+    printf("\n \n \n");
 
     fclose(file);
 }
